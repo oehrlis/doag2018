@@ -27,7 +27,7 @@ SET PAGESIZE 100
 SET ECHO OFF
 
 EXECUTE dbms_stats.gather_schema_stats( -
-        'HR'                            ,       -
+        'TVD_HR'                            ,       -
         granularity => 'ALL'            ,       -
         cascade => TRUE                 ,       -
         block_sample => TRUE            );
