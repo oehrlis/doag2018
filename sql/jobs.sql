@@ -26,6 +26,7 @@ prompt "DBA Jobs"
 select job, what jobs_what, last_date, next_date, interval jobs_interval, failures, broken from dba_jobs;
 
 prompt "DBA Scheduler Jobs"
-col PROGRAM_NAME head PROGRAM for a40
-col next_run_date head NEXT_RUN_DATE for a40
+col PROGRAM_NAME head PROGRAM for a30
+col job_name head JOB for a30
+col next_run_date head NEXT_RUN_DATE for a45
 select job_name, program_name, next_run_date, state, enabled from dba_scheduler_jobs;
