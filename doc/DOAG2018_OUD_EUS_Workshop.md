@@ -133,6 +133,17 @@ SQLNET.KERBEROS5_CONF_MIT=TRUE
 SQLNET.AUTHENTICATION_KERBEROS5_SERVICE = oracle
 
 
+
+Create the keytab file
+
+```batch
+ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM \
+    -mapuser db.trivadislabs.com -pass manager \
+    -crypto ALL -ptype KRB5_NT_PRINCIPAL \
+    -out C:\u00\app\oracle\network\db.trivadislabs.com.keytab
+```
+ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM -mapuser db.trivadislabs.com -pass manager -crypto ALL -ptype KRB5_NT_PRINCIPAL  -out C:\u00\app\oracle\network\db.trivadislabs.com.keytab
+
 Kaffeepause Vormittag
 Kerberos Troubleshooting
 - was gibts so für Probleme
