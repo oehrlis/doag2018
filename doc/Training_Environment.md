@@ -4,16 +4,20 @@
 
 ### DB Server
 
-* yum upgrade 
+* yum upgrade => erledigt
+* passwort reset root/oracle => erledigt
+* DOAG SSH key => erledigt
 
 ### OUD Server
 
-* yum upgrade
+* yum upgrade => erledigt
+* passwort reset root/oracle => erledigt
+* DOAG SSH key => erledigt
 
 ### AD Server
 
-* Windows Update
-* DNS Alias für db.trivadislabs.com
+* Windows Update => erledigt
+* DNS Alias für db.trivadislabs.com => erledigt
 
 
 ## Configure SSH
