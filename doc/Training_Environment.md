@@ -1,12 +1,22 @@
 # Setup Oracle Security Training LAB
 
 ## Todo Test Umgebungen
-
+""
 ### DB Server
 
 * yum upgrade => erledigt
 * passwort reset root/oracle => erledigt
 * DOAG SSH key => erledigt
+* UseDNS für SSHD definieren
+* NAMES.DEFAULT_DOMAIN=trivadislabs.com.localdomain anpassen
+* TNSNAmes anpassen
+* master sqlnet.ora korrekt
+* update filrewall
+Andere variante von SPN kurz....
+
+
+Oracle Support Document 1304004.1 (Configuring ASO Kerberos Authentication with a Microsoft Windows 2008 R2 Active Directory KDC ) can be found at: https://support.oracle.com/epmos/faces/DocumentDisplay?id=1304004.1 
+
 
 ### OUD Server
 
@@ -18,7 +28,7 @@
 
 * Windows Update => erledigt
 * DNS Alias für db.trivadislabs.com => erledigt
-
+* add CA role
 
 ## Configure SSH
 
@@ -151,3 +161,34 @@ curl "http://download.oracle.com/otn/linux/oracle12c/122010/linuxx64_12201_datab
 curl "http://download.oracle.com/otn/linux/oracle12c/122010/linuxx64_12201_examples.zip?AuthParam=1538055911_1b449407c7a9ef27fe138e9beb3f6ae4" -o linuxx64_12201_examples.zip
 curl "https://aru-akam.oracle.com/adcarurepos/vol/patch41/PLATFORM/CORE/Linux-x86-64/R600000000018520/p27923353_122010_Linux-x86-64.zip?FilePath=/adcarurepos/vol/patch41/PLATFORM/CORE/Linux-x86-64/R600000000018520/p27923353_122010_Linux-x86-64.zip&File=p27923353_122010_Linux-x86-64.zip&params=aHNaZnFERFZEczVXRm9uTU5MS2t6ZzphcnU9MjIyMzcyMjMmZW1haWw9c3RlZmFuLm9laHJsaUB0cml2YWRpcy5jb20mZmlsZV9pZD0xMDA1Mzg3ODYmcGF0Y2hfZmlsZT1wMjc5MjMzNTNfMTIyMDEwX0xpbnV4LXg4Ni02NC56aXAmdXNlcmlkPW8tc3RlZmFuLm9laHJsaUB0cml2YWRpcy5jb20mc2l6ZT0xMTQyNzM4NDImY29udGV4dD1BQDEwK0hAYWFydXZtdHAwMy5vcmFjbGUuY29tK1BAJmRvd25sb2FkX2lkPTM4ODEyMjc3OQ@@&AuthParam=1538063864_e12dc427f706ce43d156a9920d28390e" -o p27923353_122010_Linux-x86-64.zip
 curl "https://aru-akam.oracle.com/adcarurepos/vol/patch37/PLATFORM/CORE/Linux-x86-64/R600000000018520/p28163133_122010_Linux-x86-64.zip?FilePath=/adcarurepos/vol/patch37/PLATFORM/CORE/Linux-x86-64/R600000000018520/p28163133_122010_Linux-x86-64.zip&File=p28163133_122010_Linux-x86-64.zip&params=eUhxQVVvVXJKVjJ2NnpKb0xkK0ZqZzphcnU9MjIzMTMzOTAmZW1haWw9c3RlZmFuLm9laHJsaUB0cml2YWRpcy5jb20mZmlsZV9pZD0xMDA3MjU3MjUmcGF0Y2hfZmlsZT1wMjgxNjMxMzNfMTIyMDEwX0xpbnV4LXg4Ni02NC56aXAmdXNlcmlkPW8tc3RlZmFuLm9laHJsaUB0cml2YWRpcy5jb20mc2l6ZT0yNzEyODk0OTcmY29udGV4dD1BQDEwK0hAYWFydXZtdHAwNy5vcmFjbGUuY29tK1BAJmRvd25sb2FkX2lkPTM4ODEyMzYyNA@@&AuthParam=1538063955_38390381d05dfe35782b7473bc66edc1" -o p28163133_122010_Linux-x86-64.zip
+
+
+ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM -mapuser db.trivadislabs.com -crypto all -pass LAB01schulung -out C:\vagrant\scripts\db.trivadislabs.com.keytab
+
+
+ldapsearch -h ad.trivadislabs.com -p 389 -D "CN=oracle18c,CN=Users,DC=trivadislabs,DC=com" -w LAB01schulung -U 2 -W "file:/u00/app/oracle/admin/TDB184A/wallet" -P LAB01schulung -b "OU=People,DC=trivadislabs,DC=com" -s sub "(sAMAccountName=blo*)" dn orclCommonAttribute
+
+SELECT 'CURRENT_SCHEMA         => ' || SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') "Session Information" FROM DUAL UNION ALL
+SELECT 'CURRENT_USER           => ' || SYS_CONTEXT('USERENV', 'CURRENT_USER') FROM DUAL UNION ALL
+SELECT 'SESSION_USER           => ' || SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL UNION ALL
+SELECT 'AUTHENTICATION_METHOD  => ' || SYS_CONTEXT('USERENV', 'AUTHENTICATION_METHOD') FROM DUAL UNION ALL
+SELECT 'AUTHENTICATED_IDENTITY => ' || SYS_CONTEXT('USERENV', 'AUTHENTICATED_IDENTITY') FROM DUAL UNION ALL
+SELECT 'ENTERPRISE_IDENTITY    => ' || SYS_CONTEXT('USERENV', 'ENTERPRISE_IDENTITY') FROM DUAL UNION ALL
+SELECT 'IDENTIFICATION_TYPE    => ' || SYS_CONTEXT('USERENV', 'IDENTIFICATION_TYPE') FROM DUAL UNION ALL
+SELECT 'LDAP_SERVER_TYPE       => ' || SYS_CONTEXT('USERENV', 'LDAP_SERVER_TYPE') FROM DUAL;
+
+
+ldapsearch -h ad.trivadislabs.com -p 389 -D "CN=oracle18c,CN=Users,DC=trivadislabs,DC=com" -w LAB01schulung -U 2 -W "file:/u00/app/oracle/admin/TDB184A/wallet" -P LAB01schulung -b "OU=People,DC=trivadislabs,DC=com" -s sub "(sAMAccountName=blo*)" dn orclCommonAttribute
+
+
+MOS Notes 2118421.1
+1076432.1
+2462012.1
+352389.1
+1304004.1
+1956558.1
+1592446.1
+1592421.1
+1571196.1
+2357753.1
+2056712.1
