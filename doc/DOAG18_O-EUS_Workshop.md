@@ -304,14 +304,44 @@ nslookup ad.trivadislabs.com
 nslookup 10.0.0.4
 nslookup db.trivadislabs.com
 nslookup 10.0.0.5
-
 ```
 
+Prüfen ob mit ``okinit`` ein Session Ticket erstellt werden kann
+
+```Bash
+okinit king@TRIVADISLABS.COM
+```
 
 ## Kerberos Authentifizierung
 
+Anpassen des init.ora Parameters OS Prefix. Für die Kerberos Authentifizierung muss dieser leer sein.
+
+```SQL
+Show parameter xxx
+ALTER SYSTEM SET xxx='' SCOPE=spfile;
+STARTUP FORCE;
+```
+
+Erstellen eines Kerberos Benutzers für den Mitarbeiter King.
+
+```SQL
+CREATE USER king IDENTIFIED EXLTERNALLY AS "king@TRIVADISLABS.COM";
+
+connet /@TDB184A
+```
+
+Anzeigen Informationen zum aktuell verbundenen Benutzer
+
+@sousrinf
+Show user
+Select sys_connect
 
 ## Zusatz Aufgaben
+
+
+* Versuchen Sie einen weiteren Kerberos Benutzer in der Datebank zu erstellen. Dabei nutzen sie aber den UPN als Benutzernamen.
+* Kombinieren Sie Kerberos Authentifizierung mit Proxy Authentifizierung.
+* Locken Sie im AD den Benutzer und versuchen erneut mit der Datenbank zu verbinden.
 
 
 
