@@ -1,3 +1,8 @@
+* Kontrolle der benuter und Passwörter
+
+
+VPD zeugs
+
 # Setup Oracle Security Training LAB
 
 ## Todo Test Umgebungen

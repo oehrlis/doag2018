@@ -1,3 +1,0 @@
-# Datenbank Authentifizierung und Password Verifier
-
-DB authentifizierung ist wichtig...
