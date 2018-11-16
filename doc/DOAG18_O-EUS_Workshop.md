@@ -249,9 +249,64 @@ Erstellen Sie für diesen Benutzer eine Keytab Datei. Öffnen Sie dazu ein Comma
 ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM -mapuser db.trivadislabs.com -pass LAB01schulung -crypto ALL -ptype KRB5_NT_PRINCIPAL  -out C:\u00\app\oracle\network\db.trivadislabs.com.keytab
 ```
 
-Kopieren Sie die Keytab Datei mit WinSCP auf den Datenbank Sever. Achten Sie darauf, dass die Datei als Binärdatei kopiert wird.
+Kopieren Sie die Keytab Datei mit WinSCP auf den Datenbank Sever in das Verzeichnis ``$cdn/admin``. Achten Sie darauf, dass die Datei als Binärdatei kopiert wird.
+
+Kontrolle der Keytab Datei mit ``oklist`` auf dem Datenbank Server. 
+
+```bash
+oklist -e -f $cdn/admin/db.trivadislabs.com.keytab
+```
 
 ## SQLNet Konfiguration
+
+Ergänzen Sie die ``sqlnet.ora`` Datei mit folgenden Parametern.
+
+```bash
+vi $cdn/admin/sqlnet.ora
+##########################################################################
+# Kerberos Configuration
+##########################################################################
+SQLNET.AUTHENTICATION_SERVICES = (BEQ,KERBEROS5)
+SQLNET.FALLBACK_AUTHENTICATION = TRUE
+SQLNET.KERBEROS5_KEYTAB = /u00/app/oracle/network/admin/db.trivadislabs.com.keytab
+SQLNET.KERBEROS5_REALMS = /u00/app/oracle/network/admin/krb.realms
+SQLNET.KERBEROS5_CC_NAME = /u00/app/oracle/network/admin/krbcache
+SQLNET.KERBEROS5_CONF = /u00/app/oracle/network/admin/krb5.conf
+SQLNET.KERBEROS5_CONF_MIT=TRUE
+SQLNET.AUTHENTICATION_KERBEROS5_SERVICE = oracle
+```
+
+Erstellen Sie die Kerberos Konfigurationsdatei ``krb5.conf`` mit folgendem Inhalt.
+
+```bash
+[libdefaults]
+ default_realm = TRIVADISLABS.COM
+ clockskew=300
+ ticket_lifetime = 24h
+ renew_lifetime = 7d
+ forwardable = true
+
+[realms]
+ TRIVADISLABS.COM = {
+   kdc = ad.trivadislabs.com
+   admin_server = ad.trivadislabs.com
+}
+
+[domain_realm]
+.trivadislabs.com = TRIVADISLABS.COM
+trivadislabs.com = TRIVADISLABS.COM
+```
+
+Kontrollieren Sie ob die Namensauflösung wie gewünscht funktioniert.
+
+```bash
+nslookup ad.trivadislabs.com
+nslookup 10.0.0.4
+nslookup db.trivadislabs.com
+nslookup 10.0.0.5
+
+```
+
 
 ## Kerberos Authentifizierung
 
@@ -289,24 +344,7 @@ User anlegen
 krb5 file auf dem server anlegen
 ####krb5.conf DB Server
 
-```bash
-[libdefaults]
- default_realm = TRIVADISLABS.COM
- clockskew=300
- ticket_lifetime = 24h
- renew_lifetime = 7d
- forwardable = true
 
-[realms]
- TRIVADISLABS.COM = {
-   kdc = ad.trivadislabs.com
-   admin_server = ad.trivadislabs.com
-}
-
-[domain_realm]
-.trivadislabs.com = TRIVADISLABS.COM
-trivadislabs.com = TRIVADISLABS.COM
-```
 
 sqlnet.ora file
 
