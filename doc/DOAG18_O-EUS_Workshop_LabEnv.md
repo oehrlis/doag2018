@@ -1,3 +1,4 @@
+
 # Demo und Übungsumgebung
 
 ## Architektur
@@ -21,6 +22,9 @@ Die zentrale Benutzerverwaltung mit _Oracle Centrally Managed Users_ oder _Oracl
 
 Der Oracle Datenbank Server ist wie folgt konfiguriert:
 
+* **Host Name :** ad.trivadislabs.com
+* **Interne IP Adresse :** 10.0.0.3
+* **Externe IP Adresse :** gemäss Liste
 * **Betriebssystem :** Oracle Enterprise Linux Server Release 7.5
 * **Oracle Datenbank Software :**
     * Oracle 12c Release 2 Enterprise Edition (12.2.0.1) mit Release Update vom Oktober 2018
@@ -29,8 +33,8 @@ Der Oracle Datenbank Server ist wie folgt konfiguriert:
     * **TDB122A** Oracle 12cR2 Enterprise Edition Single Instance für die Übungen mit EUS
     * **TDB184A** Oracle 18c Enterprise Edition Single Instance für die Übungen mit CMU
 * **Betriebsystem Benutzer :** 
-    * oracle / TW4,36BAK3
-    * root / 27.2VNCN4z
+    * oracle / PASSWORT
+    * root / PASSWORT
 * **Datenbank Benutzer :** 
     * sys / manager
     * system / manager
@@ -43,19 +47,19 @@ Das Trivadis Base Environment (TVD-BasenvTM) ermöglicht einfaches Navigieren in
 
 | Alias Name | Beschreibung                                                              |
 |------------|---------------------------------------------------------------------------|
-| TDB122A    | setzt die Umgebung im Terminal für die Datenbank TDB122A                  |
-| TDB184A    | setzt die Umgebung im Terminal für die Datenbank TDB184A                  |
 | cda        | zum Admin Verzeichnis der aktuell gesetzten Datenbank                     |
-| cdob       | zum Oracle Base                                                           |
 | cdh        | zum Oracle Home                                                           |
+| cdob       | zum Oracle Base                                                           |
 | cdt        | zum TNS_ADMIN                                                             |
 | sqh        | startet SQLPlus mit „sqlplus / as sysdba“ inklusive Befehlshistory        |
-| u          | Statusanzeige für alle Oracle Datenbanken und Listener (z.B. open, mount) |
 | sta        | Statusanzeige für die aktuell gesetzte Datenbank                          |
-| via        | öffnet das Alertlog der aktuell gesetzten Datenbank in vi                 |
 | taa        | öffnet das Alertlog der aktuell gesetzten Datenbank mit ``tail -f``       |
+| TDB122A    | setzt die Umgebung im Terminal für die Datenbank *TDB122A*                |
+| TDB184A    | setzt die Umgebung im Terminal für die Datenbank *TDB184A*                |
+| u          | Statusanzeige für alle Oracle Datenbanken und Listener (z.B. open, mount) |
+| via        | öffnet das Alertlog der aktuell gesetzten Datenbank in vi                 |
 
-Die Installation ist nach dem OFA (Optimal Flexible Architecture) Standard vorgenommen worden – Beispiel für die Installation auf der Datenbank-VM für die Datenbank - TDB122A:
+Die Installation ist nach dem OFA (Optimal Flexible Architecture) Standard vorgenommen worden – Beispiel für die Installation auf der Datenbank-VM für die Datenbank - *TDB122A*:
 
 | Mount Point / Directory                  | Beschreibung                             |
 |------------------------------------------|------------------------------------------|
@@ -72,8 +76,8 @@ Die Installation ist nach dem OFA (Optimal Flexible Architecture) Standard vorge
 | ``/u00/app/oracle/product/12.2.0.1``     | Oracle 12.2.0.1 Home                     |
 | ``/u00/app/oracle/product/18.4.0.0 ``    | Oracle 18.4.0.0 Home                     |
 | ``/u01/oradata/TDB122A``                 | Datenbank Dateien, Redo Log Files, CTL   |
-| ``/u02/oradata/TDB122A``                 | Redo Log Files, CTL                      |
 | ``/u02/fast_recovery_area/TDB122A``      | Fast Recovery Area                       |
+| ``/u02/oradata/TDB122A``                 | Redo Log Files, CTL                      |
 
 ### Übungschema TVD_HR
 
@@ -97,35 +101,108 @@ Zukünftige Versionen von TVD_HR werden zusätzlich entsprechend VPD Policies en
 
 Der Directory Server ist wie folgt konfiguriert:
 
+* **Host Name :** oud.trivadislabs.com
+* **Interne IP Adresse :** 10.0.0.5
+* **Externe IP Adresse :** gemäss Liste
 * **Betriebssystem :** Oracle Enterprise Linux Server Release 7.5
 * **Java :** Oracle JAVA Server JRE 1.8 u192
 * **Oracle Fusion Middleware Software :**
     * Oracle Unified Directory (12.2.1.3) mit dem Bundle Patch vom Oktober 2018
     * Oracle Fusion Middleware Infrastructure Directory (12.2.1.3) mit dem Bundle Patch vom Oktober 2018
-* **Oracle Home oud12.2.1.3 :** Oracle Unified Directory standalone Installation.
-* **Oracle Home fmw12.2.1.3 :** Oracle Unified Directory collocated Installation mit Fusion Middleware Infrastructure.
+* **Oracle Home oud12.2.1.3 :** Oracle Unified Directory *standalone* Installation.
+* **Oracle Home fmw12.2.1.3 :** Oracle Unified Directory *collocated* Installation mit Oracle Fusion Middleware Infrastructure.
 * **Betriebsystem Benutzer :** 
-    * oracle / TW4,36BAK3
-    * root / 27.2VNCN4z
+    * oracle / PASSWORT
+    * root / PASSWORT
   
 ### Trivadis OUD Base
 
-Wie wo was ist basenv
+Analog zu der Datenbank Umgebung, gibt es auch für Oracle Unified Directory entsprechende Umgebungsscripte. Diese Umgebungsscripte, kurz auch OUD Base genannt, werden unteranderem in [OUD Docker images](https://github.com/oracle/docker-images/tree/master/OracleUnifiedDirectory) verwendet. Aus diesem Grund ist OUD Base etwas "leichter" aufgebaut als TVD-Basenv und basiert zu 100% auf Bash. OUD Base ist via GitHub Projekt [oehrlis/oudbase](https://github.com/oehrlis/oudbase) als Open Source verfügbar. 
+
+ In der folgenden Tabelle sind die Aliases für den OS Benutzer *oracle* aufgelistet, welche am häufigsten verwendet werden.
+
+| Alias Name | Beschreibung                                                                     |
+|------------|----------------------------------------------------------------------------------|
+| cda        | zum Admin Verzeichnis der aktuell OUD Instanz                                    |
+| cdh        | zum Oracle Home                                                                  |
+| cdih       | zum OUD Instanz Home Verzeichnis                                                 |
+| cdil       | zum OUD Instanz Log Verzeichnis                                                  |
+| cdob       | zum Oracle Base                                                                  |
+| dsc        | aufruf von dsconfig inklusive Host Name, ``$PORT_ADMIN`` und ``$PWD_FILE``       |
+| oud_ad     | setzt die Umgebung im Terminal für die OUD Instanz *oud_ad*                      |
+| taa        | öffnet das Access Log der aktuell gesetzten OUD Instanz mit ``tail -f``          |
+| u          | Statusanzeige für alle OUD Instanz inkl entsprechender Ports                     |
+| version    | Anzeiden der Version von OUD base inklusive geänderten Dateien in ``$OUD_LOCAL`` |
+| vio        | öffnet die oudtab Datei. ``${ETC_BASE}/oudtab``                                  |
+
+Die Installation ist an den OFA (Optimal Flexible Architecture) Standard angelegt. Die Software, Konfiguration sowie Instanzen werden explizit von einander getrennt. Beispiel für die Installation auf der OUD-VM für die OUD Instanz - *oud_ad*:
+
+| Mount Point / Directory                   | Beschreibung                                      |
+|-------------------------------------------|---------------------------------------------------|
+| ``/u00/app/oracle/local/oudbase``         | Environment Tools (OUD Base)                      |
+| ``/u00/app/oracle/product/fmw12.2.1.3.0`` | Oracle Unified Directory 12.2.1.3 Collocated Home |
+| ``/u00/app/oracle/product/jdk1.8.0_192``  | Oracle Java 1.8 update 192                        |
+| ``/u00/app/oracle/product/oud12.2.1.3.0`` | Oracle Unified Directory 12.2.1.3 Standalone Home |
+| ``/u01/admin/oud_ad``                     | Instance Admin Verzeichnis                        |
+| ``/u01/backup``                           | Standard Backup Verzeichnis                       |
+| ``/u01/etc``                              | oudtab und diverse Konfigurationsdateien          |
+| ``/u01/instances/oud_ad/OUD/config``      | Instanz Konfigurations Verzeichnis                |
+| ``/u01/instances/oud_ad/OUD/logs``        | Instanz Log Verzeichnis                           |
+| ``/u01/instances/oud_ad``                 | Instanz Home Verzeichnis                          |
 
 ## MS Active Directory Server
 
 ### Generelle Server Konfiguration
 
-AD VM ist hier
+Der Active Directory Server basiert auf einer Windows Server 2012 R2 Umgebung (Windows Server 2016 für on-premises Setup) und ist wie folgt konfiguriert:
 
-```
-TRIVADISLABS\Administrator
-: qp8F+82Pe9
-```
+* **Host Name :** ad.trivadislabs.com
+* **Interne IP Adresse :** 10.0.0.4
+* **Externe IP Adresse :** gemäss Liste
+* **Betriebssystem :** MS Windows Server 2012 R2
+* **Installiere Server Roles :**
+    * Active Directory Server
+    * DNS Server mit Active Directory Integration
+    * Certification Autority
+* **Zusatz Software :** nur auf der Cloud VM
+    * Putty für SSH Verbindungen mit dem OUD und DB Server
+    * MobaXTerm für SSH Verbindungen mit dem OUD und DB Server
+    * WinSCP für den File Transfer DB Server <=> AD Server
+    * SQL Developer
+    * Oracle 12c R2 und 18c Clients 
+    * MS Visual Studio Code als universellen Texteditor
+    * Predefined SSH Keys für den OUD und DB Server
+* **Betriebsystem Benutzer :** 
+    * Administrator / PASSWORT
+    * root / PASSWORT
+    * Trivadis LAB User / LAB01schulung
 
 ### AD Domain TRIVADISLAB
 
-Die Domain
+Damit eine mehr oder weniger praxis nahe Anbindung an das Active Directory möglich ist, wurde für die fiktive Firma *Trivadis LAB* eine einfache AD Struktur aufgebaut. Die folgende Abbildung zeigt das Organigram inklusive Abteilungen und Mitarbeiter für *Trivadis LAB*. Sämtlich aufgeführte Benutzer können als Testbenutzer verwendet werden. Wobei der Loginname jeweils dem klein geschriebenen Nachname entspricht. Passwort ist für alle Benutzer *LAB01schulung*.
 
+!["Trivadis LAB Company"](images/Trivadis_Labs_Company.png)
+*Abb. 1: Organigram Trivadis LAB Company*
 
-\pageref*
+Das fiktive Unternehmen hat folgende Abteilungen:
+
+| ID | Abteilung              | Distinguished Name (DN)                                        | Beschreibung       |
+|----|------------------------|----------------------------------------------------------------|--------------------|
+| 10 | Senior Management      | ``ou=Senior Management,ou=People,dc=trivadislabs,dc=com``      | Geschäftsleitung   |
+| 20 | Accounting             | ``ou=Accounting,ou=People,dc=trivadislabs,dc=com``             | Finanzen           |
+| 30 | Research               | ``ou=Research,ou=People,dc=trivadislabs,dc=com``               | Forschung          |
+| 40 | Sales                  | ``ou=Sales,ou=People,dc=trivadislabs,dc=com``                  | Verkauf + Vertrieb |
+| 50 | Operations             | ``ou=Operations,ou=People,dc=trivadislabs,dc=com``             | Betriebsabteilung  |
+| 60 | Information Technology | ``ou=Information Technology,ou=People,dc=trivadislabs,dc=com`` | IT Abteilung       |
+| 70 | Human Resources        | ``ou=Human Resources,ou=People,dc=trivadislabs,dc=com``        | Personalabteilung  |
+
+Zusätzlich wurden folgende Gruppen definiert:
+
+| Gruppe                     | Distinguished Name (DN)                                            | Beschreibung                           |
+|----------------------------|--------------------------------------------------------------------|----------------------------------------|
+| Trivadis LAB APP Admins    | ``ou=Trivadis LAB APP Admins,ou=Groups,dc=trivadislabs,dc=com``    | Applikations Administratoren           |
+| Trivadis LAB DB Admins     | ``ou=Trivadis LAB DB Admins,ou=Groups,dc=trivadislabs,dc=com``     | DB Admins aus der IT Abteilung         |
+| Trivadis LAB Developers    | ``ou=Trivadis LAB Developers,ou=Groups,dc=trivadislabs,dc=com``    | Entwickler aus der Forschungsabteilung |
+| Trivadis LAB Management    | ``ou=Trivadis LAB Management,ou=Groups,dc=trivadislabs,dc=com``    | Geschäftsleitung und Manager           |
+| Trivadis LAB System Admins | ``ou=Trivadis LAB System Admins,ou=Groups,dc=trivadislabs,dc=com`` | System Admins aus der IT Abteilung     |
+| Trivadis LAB Users         | ``ou=Trivadis LAB Users,ou=Groups,dc=trivadislabs,dc=com``         | Alle Benutzter                         |
