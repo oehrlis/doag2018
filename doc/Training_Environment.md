@@ -1,7 +1,9 @@
-* Kontrolle der benuter und Passwörter
+* Kontrolle der Benuter und Passwörter stimmen
+* Kontrolle ob SCOTT Installiert
+* Kontrolle Firewall Zugriff DB Server
+* Kontrolle Firewall Zugriff OUD Server
 
-
-VPD zeugs
+Optional VPD zeugs
 
 # Setup Oracle Security Training LAB
 

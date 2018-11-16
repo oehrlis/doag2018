@@ -22,7 +22,7 @@ Unterlagen und Skripte zum Workshop
 ### Betriebsystem und Virtualizierung
 
 * Oracle VM Virtualbox [virtualbox](https://www.virtualbox.org/wiki/Downloads) 
-* HashiCorp Vagrant [vagrant](https://www.vagrantup.com )
+* HashiCorp Vagrant [vagrant](https://www.vagrantup.com)
 * Oracle Enterprise Linux 7.5
     * Oracle Vagrant Boxes [vagrant image](http://yum.oracle.com/boxes). Predefined Image von Oracle für die Nutzung mit Virtualbox und Vagrant. Das Vagrant Image wird bei einem ``vagrant up`` falls nicht vorhanden direkt herunter geladen.
     * Oracle Software Delivery Cloud [iso](http://edelivery.oracle.com/linux). Basis Setup iso File, falls individuell ein Oracle Linux Server installiert werden soll.

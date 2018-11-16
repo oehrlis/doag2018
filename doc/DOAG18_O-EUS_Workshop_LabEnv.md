@@ -1,16 +1,16 @@
 
-# Demo und Übungsumgebung
+# Demo- und Workshopumgebung
 
 ## Architektur
 
-Für die praktischen Arbeiten im Rahmen des DOAG 2018 Schulungstages, steht pro zweiter Team eine einfach Testumgebung zur Verfügung. Die Umgebung läuft für die Dauer der Schulung in der [Oracle Ravello Cloud](https://cloud.oracle.com/en_US/ravello) und besteht, wie in Abbildung 1 ersichtlich aus folgenden Servern respektive VMs:
+Für die praktischen Arbeiten im Rahmen des DOAG 2018 Schulungstages, steht pro zweiter Team eine einfach Testumgebung zur Verfügung. Die Umgebung läuft für die Dauer der Schulung in der [Oracle Ravello Cloud](https://cloud.oracle.com/en_US/ravello) und besteht, wie in der folgenden Abbildung ersichtlich aus folgenden Servern respektive VMs:
 
 * **db.trivadislabs.com** Oracle Datenbank Server mit Oracle 12c R2 sowie 18c
 * **oud.trivadislabs.com** Oracle Directory Server mit Oracle Unified Directory 12c
 * **ad.trivadislabs.com** MS Windows Server 2012 R2 mit Active Directory
 
 !["Training Environment"](images/training_env.png)
-*Abb. 1: Architektur Schulungsumgebung*
+*Abb. 2: Architektur Schulungsumgebung*
 
 Die Umgebung ist soweit vorbereitet, dass direkt mit den Übungen gestartet werden kann. 
 
@@ -22,7 +22,7 @@ Die zentrale Benutzerverwaltung mit _Oracle Centrally Managed Users_ oder _Oracl
 
 Der Oracle Datenbank Server ist wie folgt konfiguriert:
 
-* **Host Name :** ad.trivadislabs.com
+* **Host Name :** db.trivadislabs.com
 * **Interne IP Adresse :** 10.0.0.3
 * **Externe IP Adresse :** gemäss Liste
 * **Betriebssystem :** Oracle Enterprise Linux Server Release 7.5
@@ -182,7 +182,7 @@ Der Active Directory Server basiert auf einer Windows Server 2012 R2 Umgebung (W
 Damit eine mehr oder weniger praxis nahe Anbindung an das Active Directory möglich ist, wurde für die fiktive Firma *Trivadis LAB* eine einfache AD Struktur aufgebaut. Die folgende Abbildung zeigt das Organigram inklusive Abteilungen und Mitarbeiter für *Trivadis LAB*. Sämtlich aufgeführte Benutzer können als Testbenutzer verwendet werden. Wobei der Loginname jeweils dem klein geschriebenen Nachname entspricht. Passwort ist für alle Benutzer *LAB01schulung*.
 
 !["Trivadis LAB Company"](images/Trivadis_Labs_Company.png)
-*Abb. 1: Organigram Trivadis LAB Company*
+*Abb. 3: Organigram Trivadis LAB Company*
 
 Das fiktive Unternehmen hat folgende Abteilungen:
 
