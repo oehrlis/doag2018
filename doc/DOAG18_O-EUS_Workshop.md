@@ -2,8 +2,8 @@
 title: "DOAG Schulungstag 2018"
 subtitle: "Übungen zum Workshop Oracle EUS mit OUD und AD Integration"
 author: [Stefan Oehrli]
-date: "15 November 2018"
-tvddocversion: 0.5
+date: "20 November 2018"
+tvddocversion: 0.9
 papersize: a4 
 listings-disable-line-numbers: true
 titlepage: true
@@ -20,6 +20,7 @@ logo: "images/logo.eps"
 Im Rahmen des Workshop besteht die Gelegenheit verschiedene Themen am praktischen Beispiel zu vertiefen. Dazu gibt es zu jedem Kaptiel Aufgaben, welche nach Anleitung oder individuell auf einer Testumgebung umgesetzt werden können. Die Testumgebung besteht, wie man in der folgenden Abbildung sehen kann, jeweils aus drei virtuellen Systemen. Pro zweier Team steht jeweils eine entsprechende Testumgebung zur Verfügung. 
 
 Eine Umgebung besteht jeweils aus 3 VM’s
+
 * DB Server mit Oracle 12.2 und 18c
 * OUD Server mit OUD 12.1.2.3
 * Windows Server 2012 R2 mit MS Active Directory
@@ -58,6 +59,7 @@ Im Kapitel [Demo und Übungsumgebung](#demo--und-workshopumgebung) wird die Test
 **Übungsziele:** Kennenlernen der Übungsumgebung, BasEnv sowie der Datenbanken. Festigen der Kenntnisse im Bereich Passwort Authentifizierung und Password Hashes.
 
 Arbeitsumgebung für die Übung
+
 * **Server:** db.trivadislabs.com
 * **DB:** TDB122A oder TDB184A
 
@@ -65,7 +67,7 @@ Die folgenden Aufgaben und Beispiele werden auf der DB TDB184A durchgeführt. Gr
 
 ## Überprüfung der aktuellen Password Verifier
 
-1. Prüfen was aktuell für Passwort Hashes in der Datenbank vorhanden sind. Welche Hashes gibt es? Wieso sind bei gewissen Benutzer keine Angaben in *password_versions*?
+1. Prüfen Sie was aktuell für Passwort Hashes in der Datenbank vorhanden sind. Welche Hashes gibt es? Wieso sind bei gewissen Benutzer keine Angaben in *password_versions*?
 
 ```SQL
 set linesize 120 pagesize 200
@@ -73,7 +75,7 @@ col USERNAME for a25
 SELECT username, password_versions FROM dba_users;
 ```
 
-2. Prüfen wie die VIEW *dba_users* auf die Information zu *password_versions* kommt. Im Code zum View *dba_users* findet man entsprechende *decode* Funktionen wo auf die Spalten *u.password* und *u.spare4* zugegriffen wird.
+2. Prüfen Sie wie die VIEW *dba_users* auf die Information zu *password_versions* kommt. Im Code zum View *dba_users* findet man entsprechende *decode* Funktionen wo auf die Spalten *u.password* und *u.spare4* zugegriffen wird.
 
 ```SQL
 set linesize 120 pagesize 200
@@ -90,7 +92,7 @@ col spare4 for a40
 SELECT password, spare4 FROM user$ WHERE name='SCOTT';
 ```
 
-4. Kontrolle was in der Datei ``sqlnet.ora`` für die Parameter *ALLOWED_LOGON_VERSION_** definiert wurde. Verwenden sie alternative ``cat``, ``less``, ``more`` oder ``vi`` um den Inhalt von ``sqlnet.ora`` anzuzeigen.
+4. Kontrollieren Sie was in der Datei ``sqlnet.ora`` für die Parameter *ALLOWED_LOGON_VERSION_** definiert wurde. Verwenden Sie alternative ``cat``, ``less``, ``more`` oder ``vi`` um den Inhalt von ``sqlnet.ora`` anzuzeigen.
 
 ```bash
 less $cdn/admin/sqlnet.ora
@@ -98,7 +100,8 @@ less $cdn/admin/sqlnet.ora
 cat $cdn/admin/sqlnet.ora|grep -i ALLOWED_LOGON_VERSION
 ```
 
-5. Prüfen was von SQLNet effektive verwendet wird. 
+5. Prüfen Sie was von SQLNet effektive verwendet wird. 
+
 * Einschalten des SQLNet Tracing auf der Client Seite. Setzen von *DIAG_ADR_ENABLED* und *TRACE_LEVEL_CLIENT*. Anbei manuell mit ``vi`` oder alternativ direkt mit ``sed`` ersetzten lassen.
 
 ```bash
@@ -112,7 +115,7 @@ sed -i "s|DIAG_ADR_ENABLED.*|DIAG_ADR_ENABLED=OFF|" $cdn/admin/sqlnet.ora
 sed -i "s|TRACE_LEVEL_CLIENT.*|TRACE_LEVEL_CLIENT=SUPPORT|" $cdn/admin/sqlnet.ora
 ```
 
-* Löschen allfälliger alten Trace files.
+* Löschen Sie allfällige alte Trace Dateien.
 
 ```bash
 rm $cdn/trc/sqlnet_client_*.trc
@@ -126,7 +129,7 @@ sqlplus scott/tiger
 show user
 ```
 
-* Kontrolle des Trace Files. Was ist für ALLOWED_LOGON_VERSION gesetzt? Falls nichts gesetzt ist, was für ein Wert gilt?
+* Kontrollieren Sie die Trace Datei. Was ist für ALLOWED_LOGON_VERSION gesetzt? Falls nichts gesetzt ist, was für ein Wert gilt?
 
 ```bash
 ls -rtl $cdn/trc
@@ -135,7 +138,7 @@ less $cdn/trc/sqlnet_client_*.trc
 grep -i ALLOWED_LOGON_VERSION $cdn/trc/sqlnet_client_*.trc
 ```
 
-* Tracing wieder ausschalten.
+* Schalten Sie das Tracing wieder aus.
 
 ```bash
 vi $cdn/admin/sqlnet.ora
@@ -150,7 +153,7 @@ sed -i "s|TRACE_LEVEL_CLIENT.*|TRACE_LEVEL_CLIENT=OFF|" $cdn/admin/sqlnet.ora
 
 ## Anpassen der Password Verifier
 
-1. Löschen des Oracle 12c Password Hash vom Benutzer Scott. Respektive explizites setzen des 11g Hashes.
+1. Löschen Sie den Oracle 12c Password Hash vom Benutzer Scott. Respektive setzen Sie explizit den 11g Hashes.
 
 ```SQL
 SELECT spare4 FROM user$ WHERE name='SCOTT';
@@ -219,12 +222,12 @@ col USERNAME for a25
 SELECT username, password_versions FROM dba_users WHERE username='SCOTT';
 ```
 
-## Zusatz Aufgaben
+## Zusatzaufgaben
 
-Falls noch Zeit übrig ist, können Sie noch folgende Aufgaben lösen:
+Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
 
 * Setzten von *ALLOWED_LOGON_VERSION_CLIENT* und *ALLOWED_LOGON_VERSION_SERVER* auf Werte kleiner 11 z.B 10, 9 oder 8. Was bekommt der Benutzer *SCOTT* für Passwort Hashes wenn man als *SYS* das Passwort mit *ALTER USER* neu setzt?
-* Welches Passwort wird beim Login verwendet? Sie können das Prüfen indem sie ein
+* Welches Passwort wird beim Login verwendet?
 
 # Übungen: Kerberos Authentifizierung
 
@@ -233,33 +236,46 @@ Falls noch Zeit übrig ist, können Sie noch folgende Aufgaben lösen:
 ## Service Principle und Keytab Datei
 
 Arbeitsumgebung für die Übung
+
 * **Server:** ad.trivadislabs.com
 * **Benutzer:** Administrator
 
-Für die Kerberos Authentifizierung wird ein Service Principle benötigt. Der Entsprechende Benutzer Account wurde vorbereitet. Konntrollieren Sie in auf dem Server *ad.trivadislabs.com* mit dem Tool *Active Directory User and Computers* ob der Benutzer *db.trivadislabs.com* existiert. Falls ja, was hat der Benutzer für Einstellungen bezüglich Login Name und Account optionen? Passen Sie ggf noch die Account Optionen an uns setzen *Kerberos AES 128* und *Kerberos AES 256*. Die folgende Abbildung zeigt ein Beispiel.
+Für die Kerberos Authentifizierung wird ein Service Principle benötigt. Der Entsprechende Benutzer Account wurde vorbereitet. Kontrollieren Sie in auf dem Server *ad.trivadislabs.com* mit dem Tool *Active Directory User and Computers* ob der Benutzer *db.trivadislabs.com* existiert. Falls ja, was hat der Benutzer für Einstellungen bezüglich Login Name und Account optionen? Passen Sie ggf noch die Account Optionen an uns setzen *Kerberos AES 128* und *Kerberos AES 256*. Die folgende Abbildung zeigt ein Beispiel. Optional können Sie den Benutzer auch löschen und neu anlegen.
 
-!["Benutzereigenschaften"](images/User_Account_Preferences.png)
-*Abb. 2: Benutzereigenschaften von dba.trivadislabs.com*
+!["Benutzereigenschaften"](images/User_Account_Preferences.png)  
 
-***Zusatzaufgabe*** Optional können Sie den Benutzer auch löschen und neu anlegen.
-
-Erstellen Sie für diesen Benutzer eine Keytab Datei. Öffnen Sie dazu ein Command Prompt (``cmd.exe``).
+Nachdem die Account Optionen angepasst wurden, ist für diesen Benutzer eine Keytab Datei zu erstellen. Öffnen Sie dazu ein Command Prompt (``cmd.exe``) und führen ``ktpass.exe`` aus.
 
 ```bash
-ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM -mapuser db.trivadislabs.com -pass LAB01schulung -crypto ALL -ptype KRB5_NT_PRINCIPAL  -out C:\u00\app\oracle\network\db.trivadislabs.com.keytab
+ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM -mapuser db.trivadislabs.com -pass LAB01schulung -crypto ALL -ptype KRB5_NT_PRINCIPAL  -out C:\u00\app\oracle\network\admin\db.trivadislabs.com.keytab
 ```
 
-Kopieren Sie die Keytab Datei mit WinSCP auf den Datenbank Sever in das Verzeichnis ``$cdn/admin``. Achten Sie darauf, dass die Datei als Binärdatei kopiert wird.
-
-Kontrolle der Keytab Datei mit ``oklist`` auf dem Datenbank Server. 
+Überprüfen Sie anschliessend den Service Principle Names (SPN) mit ``setspn``
 
 ```bash
-oklist -e -f $cdn/admin/db.trivadislabs.com.keytab
+setspn -L db.trivadislabs.com
+```
+
+Kopieren Sie die Keytab Datei mit WinSCP auf den Datenbank Sever in das Verzeichnis ``$cdn/admin``. Achten Sie darauf, dass die Datei als Binärdatei kopiert wird. Alternativ können Sie auch das unten aufgeführte Putty SCP Kommando verwenden.
+
+```bash
+"C:\Program Files\PuTTY\pscp.exe" C:\u00\app\oracle\network\admin\db.trivadislabs.com.keytab db.trivadislabs.com:/u00/app/oracle/network/admin
+```
+
+Nachdem die Keytab Datei auf dem Datenbank Server kopiert worden ist, kann mit ``oklist`` überprüft werden was die Datei für Crypto Algorithmen untersützt. Somit wird zudem indirekt geprüft ob die Keytab Datei verwendet werden kann.
+
+```bash
+oklist -e -k $cdn/admin/db.trivadislabs.com.keytab
 ```
 
 ## SQLNet Konfiguration
 
-Ergänzen Sie die ``sqlnet.ora`` Datei mit folgenden Parametern.
+Arbeitsumgebung für die Übung:
+
+* **Server:** db.trivadislabs.com
+* **Benutzer:** oracle
+
+Ergänzen Sie die ``sqlnet.ora`` Datei mit folgenden Parametern. Eine Beispiel Konfigurationsdatei ist im Verzeichnis ``$cdl/doag2018/lab/03_krb`` vorhanden.
 
 ```bash
 vi $cdn/admin/sqlnet.ora
@@ -276,7 +292,7 @@ SQLNET.KERBEROS5_CONF_MIT=TRUE
 SQLNET.AUTHENTICATION_KERBEROS5_SERVICE = oracle
 ```
 
-Erstellen Sie die Kerberos Konfigurationsdatei ``krb5.conf`` mit folgendem Inhalt.
+Erstellen Sie die Kerberos Konfigurationsdatei ``krb5.conf`` mit folgendem Inhalt. Eine Beispiel Konfigurationsdatei ist im Verzeichnis ``$cdl/doag2018/lab/03_krb`` vorhanden.
 
 ```bash
 [libdefaults]
@@ -306,7 +322,7 @@ nslookup db.trivadislabs.com
 nslookup 10.0.0.5
 ```
 
-Prüfen ob mit ``okinit`` ein Session Ticket erstellt werden kann
+Erstellen Sie anschliessend mit``okinit`` manuell ein Session Ticket.
 
 ```Bash
 okinit king@TRIVADISLABS.COM
@@ -314,138 +330,440 @@ okinit king@TRIVADISLABS.COM
 
 ## Kerberos Authentifizierung
 
-Anpassen des init.ora Parameters OS Prefix. Für die Kerberos Authentifizierung muss dieser leer sein.
+Arbeitsumgebung für die Übung:
+
+* **Server:** db.trivadislabs.com
+* **Benutzer:** oracle
+  
+Passen Sie den init.ora Parameter OS Prefix an. Für die Kerberos Authentifizierung muss dieser leer sein.
 
 ```SQL
-Show parameter xxx
-ALTER SYSTEM SET xxx='' SCOPE=spfile;
+sqh
+Show parameter os_authent_prefix
+ALTER SYSTEM SET os_authent_prefix='' SCOPE=spfile;
 STARTUP FORCE;
 ```
 
-Erstellen eines Kerberos Benutzers für den Mitarbeiter King.
+Erstellen Sie einen Kerberos Benutzers für den Mitarbeiter King. Verwenden Sie dazu die Variante mit dem Kerberos Principal Name.
 
 ```SQL
-CREATE USER king IDENTIFIED EXLTERNALLY AS "king@TRIVADISLABS.COM";
-
-connet /@TDB184A
+CREATE USER king IDENTIFIED EXTERNALLY AS 'king@TRIVADISLABS.COM';
+GRANT CONNECT TO king;
+GRANT SELECT ON v_$session TO king;
 ```
 
-Anzeigen Informationen zum aktuell verbundenen Benutzer
+Login als Benutzer King mit dem zuvor generierten Session Ticket und anzeigen der Informationen zur aktuellen Session.
+
+```SQL
+
+connect /@TDB184A
+
+show user
 
 @sousrinf
-Show user
-Select sys_connect
 
-## Zusatz Aufgaben
+SELECT sys_context('USERENV','AUTHENTICATION_TYPE') FROM DUAL;
+SELECT sys_context('USERENV','AUTHENTICATION_METHOD') FROM DUAL;
+SELECT sys_context('USERENV','AUTHENTICATED_IDENTITY') FROM DUAL;
+```
 
+## Zusatzaufgaben
 
-* Versuchen Sie einen weiteren Kerberos Benutzer in der Datebank zu erstellen. Dabei nutzen sie aber den UPN als Benutzernamen.
+Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
+
+* Versuchen Sie einen weiteren Kerberos Benutzer in der Datebank zu erstellen (z.B. *adams*). Dabei nutzen Sie aber den UPN als Benutzernamen. Wie setzt sich dieser genau zusammen? Wie wird dieser bei einem ``CREATE USER`` geschreiben, damit die Authentifizierung klappt?
 * Kombinieren Sie Kerberos Authentifizierung mit Proxy Authentifizierung.
 * Locken Sie im AD den Benutzer und versuchen erneut mit der Datenbank zu verbinden.
-
-
-
-- Einrichten keytab file
-- DB user erstellen
-- okinit auf db server
-- kerkberos login auf DB server
-- User informationen
-- kerberos login remote vom AD domain
-- bestehendne benutzer anpassen
-- Kerberos mit Proxy kombinieren
-
-Kurs Agenda
-Einleitung
-DB Authentifizierung und Password Verifier
-Einführung Übungsumgebung
-- wie ist die Umgebung aufgebaut (Architektur, Software, Zugriff)
-- TRIVADISLAB Domain
-- Firma Born Inc.
-- passwörter
-- Zugriff via ssh / putty
-- Zugriff via Remote Desktop
-- Trivadis Basenv und OUD Base
-Übungen Password Verifier
-Kerberos Authentifizierung
-Übungen Kerberos Authentifizierung
-
-User anlegen
-
-krb5 file auf dem server anlegen
-####krb5.conf DB Server
-
-
-
-sqlnet.ora file
-
-```bash
-##########################################################################
-# Kerberos Configuration
-##########################################################################
-SQLNET.AUTHENTICATION_SERVICES = (BEQ,KERBEROS5)
-SQLNET.FALLBACK_AUTHENTICATION = TRUE
-SQLNET.KERBEROS5_KEYTAB = /u00/app/oracle/network/admin/db.trivadislabs.com.keytab
-SQLNET.KERBEROS5_REALMS = /u00/app/oracle/network/admin/krb.realms
-SQLNET.KERBEROS5_CC_NAME = /u00/app/oracle/network/admin/krbcache
-SQLNET.KERBEROS5_CONF = /u00/app/oracle/network/admin/krb5.conf
-SQLNET.KERBEROS5_CONF_MIT=TRUE
-SQLNET.AUTHENTICATION_KERBEROS5_SERVICE = oracle
-
-```
-
-Create the keytab file
-
-```batch
-ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM \
-    -mapuser db.trivadislabs.com -pass manager \
-    -crypto ALL -ptype KRB5_NT_PRINCIPAL \
-    -out C:\u00\app\oracle\network\db.trivadislabs.com.keytab
-```
-
-```bash
-ktpass.exe -princ oracle/db.trivadislabs.com@TRIVADISLABS.COM -mapuser db.trivadislabs.com -pass manager -crypto ALL -ptype KRB5_NT_PRINCIPAL  -out C:\u00\app\oracle\network\db.trivadislabs.com.keytab
-```
-
-Kaffeepause Vormittag
-Kerberos Troubleshooting
-- was gibts so für Probleme
-    - Namesauflösung und DNS Probleme
-    - Zeit Differenzen
-    - Keytab File falsch z.B. falscher Algorithmus, vno Nummer etc
-    - 
-- welche Möglichkeiten für die Problemanalyse stehen zur Verfügung
-- SQLNet Trace
-- Wireshark
-- TRACE File
+* Versuchen Sie sich als Benutzer *king* am Active directory Server anzumelden und eine SQLPlus Verbindung auf den Datenbank Server zu öffnen. Hierzu müssen Sie vorgänging noch die Kerberos Client Konfiguration erstellen (sqlnet.ora sowie die krb5.conf Datei erstellen).
 
 # Übungen: Centrally Managed User 18c
 
-Generell verschiedenens
+**Übungsziele:** Konfiguration von Centrally Managed Users für die Datenbank TDB184. Erweitern des Active Directory Schemas inklusive der Installation des Password Filter Plugins. Erstellen von Mappings für Benutzer und Rollen sowie erfolgreichem Login mit Passwort sowie Kerberos Authentifizierung.
 
-## Übung Centrally Managed User 18c
+## Active Directory
 
-Was neues in 18c
+Arbeitsumgebung für die Übung:
+
+* **Server:** ad.trivadislabs.com
+* **Benutzer:** Administrator
+
+Die folgenden Arbeiten werden in der Regel in zusammenarbeit mit dem Windows respektive Active Directory Administrator durchgeführt. Je nach Unternehmensgrösse sind allenfalls noch weiter IT Bereich mit involviert.
+
+Für das Oracle Wallet wird das Root Zertifikat vom Active Directory Server benötigt. Diesen kann in der Übungsumgebung einfach via Commandline exportiert werden. Öffnen Sie dazu ein Command Prompt (``cmd.exe``) und exportieren das Root Zertifikat. Das exportiert Root Zertifikat müssen Sie anschliessend mit WinSCP auf den Datenbank Server kopieren in das Verzeichnis ``/u00/app/oracle/network/admin`` kopieren. Alternativ können Sie auch das unten aufgeführte Putty SCP Kommando verwenden.
+
+```bash
+certutil -encode -ca.cert c:\u00\app\oracle\network\admin\Trivadis_LAB_root.cer
+
+"C:\Program Files\PuTTY\pscp.exe" c:\u00\app\oracle\network\admin\Trivadis_LAB_root.cer db.trivadislabs.com:/u00/app/oracle/network/admin
+```
+
+Um Oracle CMU mit Passwort Authentifizierung verwenden zu können, muss Active Directory entsprechend angepasst werden. Dazu wird muss mit WinSCP die Datei ``opwdintg.exe`` auf den Active Directory Server kopiert werden. Auf dem Datenbank Server liegt die Datei im Oracle 18c Home ``$ORACLE_HOME/bin/opwdintg.exe``. Alternativ können Sie auch das unten aufgeführte Putty SCP Kommando verwenden.
+
+```bash
+"C:\Program Files\PuTTY\pscp.exe" db.trivadislabs.com:/u00/app/oracle/product/18.4.0.0/bin/opwdintg.exe c:\u00\app\oracle\network\admin\
+```
+
+Anschliessend muss die Datei auf dem Active Directory ausgeführt werden, um das AD Schema zu erweitern und das Passwort Filter Plugin zu installieren. Öffnen Sie dazu ein Command Prompt (``cmd.exe``) und führen ``opwdintg.exe`` aus. Bei der Installstion sind folgende Fragen mit Ja respektive Yes zu beantworten:
+
+* Do you want to extend AD schema? [Yes/No]: 
+* Schema extension for this domain will be permanent. Continue? [Yes/No]:
+* Do you want to install Oracle password filter?[Yes/No]: 
+* The change requires machine reboot. Do you want to reboot now?[Yes/No]:
+
+Nachdem der Active Directory Server neu gestartet wurde, müssen zum Abschluss die neu erstellten Gruppen für die Passwort Verifier entsprechend vergeben werden. Entsprechende Benutzer, welche sich an der Datenbank anmelden, müssen dazu ein Oracle Password Hash haben. Dieser wird vom Password Filter bei allen Benutzer erstellt, welche in der Gruppe *ORA_VFR_11G* respektive *ORA_VFR_12C* sind. Zudem müssen diese Benutzer ihr Passwort neu setzten, damit das Passwort Filter Plugin auch effektive das Attribut *orclCommonAttribute* setzt.
+
+**Variante 1:** Passen Sie die Gruppe *Trivadis LAB Users* manuell an fügen bei dieser Gruppe neu MemberOf *ORA_VFR_11G* respektive *ORA_VFR_12C* hinzu.
+
+* Starten Sie *Active Directory Users and Computers*.
+* Wählen Sie im Container Groups die Gruppe *Trivadis LAB Users* aus.
+* Öffnen Sie mit rechtem Mausklick die *Properties*.
+* Im Tab *Member Of* clicken Sie *Add...*
+* Fügen Sie die Gruppe *ORA_VFR_11G* respektive *ORA_VFR_12C* hinzu.
+* Schliessen Sie die Dialoge mit *Ok*.
+  
+Passen Sie manuell die Passwörter der gewünschten Benutzer an. Dazu müssen Sie in *Active Directory Users and Computers* jeweils auf dem Benutzer mit rechtem Mausklick *Reset Password...* wählen und ein neues Passwort setzten.
+
+**Variante 2:** Öffnen Sie ein PowerShell Fenster und führen das Script ``c:\doag2018\lab\04_cmu\reset_ad_users.ps1`` aus. Das Script passt sowohl die Gruppe an und änder die Passwörter aller Benutzer. 
+
+```bash
+c:\doag2018\lab\04_cmu\reset_ad_users.ps1
+```
+
+Prüfen Sie zur Kontrolle bei einem Benutzer, ob das das Attribut *orclCommonAttribute* gesetzt ist. Die folgende Abbildung zeigt die Properties vom Benutzer King und das Attribut *orclCommonAttribute*.
+
+!["Benutzereigenschaften Benutzer King"](images/User_Account_Preferences_King.png)  
+
+## Server und Datenbank Konfiguration
+
+Arbeitsumgebung für die Übung:
+
+* **Server:** db.trivadislabs.com
+* **Benutzer:** oracle
+* **Datenbank:** TDB184A
+
+Erstellen Sie ein SQLNet Konfigurationsdatei ``dsi.ora`` mit den folgenden Informationen zum Aktive Directory Server. Eine Beispiel Konfigurationsdatei ist im Verzeichnis ``$cdl/doag2018/lab/04_cmu`` vorhanden.
+
+```bash
+DSI_DIRECTORY_SERVERS = (ad.trivadislabs.com:389:636)
+DSI_DEFAULT_ADMIN_CONTEXT = "dc=trivadislabs,dc=com"
+DSI_DIRECTORY_SERVER_TYPE = AD
+```
+
+Erstellen Sie ein neues Oracle Wallet für die Datenbank TDB184A.
+
+```bash
+mkdir $ORACLE_BASE/admin/$ORACLE_SID/wallet
+orapki wallet create -wallet $ORACLE_BASE/admin/$ORACLE_SID/wallet -auto_login
+```
+
+Fügen Sie die Einträge für den Benutzername, Passwort und den Distinguished Name hinzu.
+
+```bash
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -createEntry ORACLE.SECURITY.USERNAME oracle18c
+
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -createEntry ORACLE.SECURITY.DN CN=oracle18c,CN=Users,DC=trivadislabs,DC=com
+
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -createEntry ORACLE.SECURITY.PASSWORD LAB01schulung
+```
+
+Laden Sie abschliessend noch das Root Zertifikat vom Active Directory Server in das Wallet
+
+```bash
+orapki wallet add -wallet $ORACLE_BASE/admin/$ORACLE_SID/wallet -cert $TNS_ADMIN/Trivadis_LAB_root.cer -trusted_cert
+```
+
+Mit folgenden Befehlen läst sich prüfen, wass nun effektiv im Wallet steht.
+
+```bash
+orapki wallet display -wallet $ORACLE_BASE/admin/$ORACLE_SID/wallet
+
+Oracle PKI Tool Release 18.0.0.0.0 - Production
+Version 18.1.0.0.0
+Copyright (c) 2004, 2017, Oracle and/or its affiliates. All rights reserved.
+
+Requested Certificates: 
+User Certificates:
+Oracle Secret Store entries: 
+ORACLE.SECURITY.DN
+ORACLE.SECURITY.PASSWORD
+ORACLE.SECURITY.USERNAME
+Trusted Certificates: 
+Subject:        CN=Trivadis LAB Enterprise Root CA,DC=trivadislabs,DC=com
+```
+
+```bash
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -list
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -viewEntry ORACLE.SECURITY.DN
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -viewEntry ORACLE.SECURITY.PASSWORD
+mkstore -wrl $ORACLE_BASE/admin/$ORACLE_SID/wallet -viewEntry ORACLE.SECURITY.USERNAME
+```
+
+Mit dem LDAP Search Befehl läst sich zudem Prüfen, ob der Zugriff auf das Active Directory mit dem Wallet funktioniert. Der folgende Befehl sucht nach einem *sAMAccountName=blo*. **Achtung!** Die Passwörter für den Benutzer oracle18c sowie das Wallet Passwort werden hier auf dem Commandline angegeben.
+
+```bash
+ldapsearch -h ad.trivadislabs.com -p 389 \
+    -D "CN=oracle18c,CN=Users,DC=trivadislabs,DC=com" \
+    -w LAB01schulung -U 2 \
+    -W "file:/u00/app/oracle/admin/TDB184A/wallet" \
+    -P LAB01schulung -b "OU=People,DC=trivadislabs,DC=com" \
+    -s sub "(sAMAccountName=blo*)" dn orclCommonAttribute
+```
+
+## Benutzer und Rollen
+
+Arbeitsumgebung für die Übung:
+
+* **Server:** db.trivadislabs.com
+* **Benutzer:** oracle
+* **Datenbank:** TDB184A
+
+Als letzter Konfigurationspunkt für Centrally Managed User müssen neben dem Mapping entsprechende init.ora Parameter angepasst werden. Starten Sie ein sqlplus als SYSDBA und setzen Sie die beiden Parameter *ldap_directory_access* und *ldap_directory_sysauth*.
+
+```sql
+ALTER SYSTEM SET ldap_directory_access = 'PASSWORD';
+ALTER SYSTEM SET ldap_directory_sysauth = YES SCOPE=SPFILE;
+STARTUP FORCE;
+```
+
+Erstellen Sie einen gobalen shared Benutzer *tvd_global_users*, der für alle Mitarbeiter gilt. Also für alle Benutzer in der Gruppe *cn=Trivadis LAB Users,ou=Groups,dc=trivadislabs,dc=com*. Zudem sollen sich alle Benutzer verbinden können.
+
+```sql
+CREATE USER tvd_global_users IDENTIFIED GLOBALLY AS 'cn=Trivadis LAB Users,ou=Groups,dc=trivadislabs,dc=com';
+GRANT create session TO tvd_global_users ;
+GRANT SELECT ON v_$session TO tvd_global_users ;
+```
+
+Verbinden Sie sich als Benutzer Blofeld und prüfen Sie die detail Informationen zu dieser Session wie Authentifizierung, Identity etc.
+
+```sql
+connect "blofeld@TRIVADISLABS.COM"@TDB184A
+
+show user
+@sousrinf
+```
+
+Nun können sich alle AD Benutzer der Gruppe *Trivadis LAB Users* mit der Datenbank TDB184A verbinden. Sie erhalten dabei die basis Rechte, welche wir zuvor dem Datenbank Account *tvd_global_users* gegeben haben. Interessant wird es, wenn die Benutzer aus den verschiedenen Abteilungen unterschiedliche Rechte oder Rollen erhalten. Dazu erstellen wir entsprechende Rollen mit einem Mapping auf die Active Directory Gruppe oder Organisation Unit. 
+
+```sql
+CONNECT / AS SYSDBA
+
+CREATE ROLE mgmt_role IDENTIFIED GLOBALLY AS
+'CN=Trivadis LAB Management,OU=Groups,DC=trivadislabs,DC=com';
+
+CREATE ROLE rd_role IDENTIFIED GLOBALLY AS
+'CN=Trivadis LAB Developers,OU=Groups,DC=trivadislabs,DC=com';
+```
+
+Prüfen Sie nun die verschiedenen Rechte / Rollen der einzelnen Mitarbeitern aus diesem Abteilungen.
+
+```sql
+CONNECT "moneypenny@TRIVADISLABS.COM"/LAB01schulung@TDB184A
+SELECT * FROM session_roles;
+
+CONNECT "smith@TRIVADISLABS.COM"/LAB01schulung@TDB184A
+SELECT * FROM session_roles;
+
+CONNECT "blofeld@TRIVADISLABS.COM"/LAB01schulung@TDB184A
+SELECT * FROM session_roles;
+```
+
+Wie ist das jetzt mit Kerberos? Wenn Sie die Übung zu Kerberos erfolgreich abgeschlossen haben, können sich die Benutzer nun auch mit Kerberos Authentifizieren. Ein Versuch mit dem Benutzer *Bond* schaft hier klarheit. Generieren sie zuerst manuell ein Ticket Granting Ticket mit ``okinit``. Die Passwortabfrage umgehen wir bei diesem Beispiel einfach indem wir das Passwort mit einem ``echo |`` via STDIN an  ``okinit`` schicken. Mit dem Skript ``sousrinf.sql`` sehen wir anschliessend detailierte Informationen zur Authentifizierung.
+
+```bash
+echo LAB01schulung|okinit bond
+sqlplus /@TDB184A
+SELECT * FROM session_roles;
+
+show user
+@sousrinf.sql
+```
+
+## Zusatzaufgabe: Rollen und Admininistratoren
+
+Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an. Erstellen Sie ein global private Schema für den Benutzer Adams. Was für ein DB Benutzer wird jetzt verwendet, wenn sich der Benutzer Adams anmeldet? Welche Rollen sind Aktiv?
+
+```sql
+CREATE USER adams IDENTIFIED GLOBALLY AS 'CN=Douglas Adams,OU=Research,OU=People,DC=trivadislabs,DC=com';
+GRANT create session TO adams ;
+GRANT SELECT ON v_$session TO adams ;
+
+sqlplus "adams@TRIVADISLABS.COM"/LAB01schulung@TDB184A
+SELECT * FROM session_roles;
+show user
+@sousrinf
+```
+
+Erstellen Sie ein Mapping für die DBA's, welche sich auch als SYSDBA anmelden sollen. Prüfen Sie dazu als erstest das Format der Oracle Password Datei. Voraussetzung für das Mapping von Administratoren ist die Passwort Datei Version 12.2.
+
+```bash
+orapwd describe file=$cdh/dbs/orapwTDB184A
+```
+
+Migrieren Sie die aktuelle Passwort Datei in das Format 12.2. Alternativ können Sie die Passwort Datei auch neu anlegen.
+
+```bash
+mv $cdh/dbs/orapwTDB184A $cdh/dbs/orapwTDB184A_format12
+orapwd format=12.2 input_file=$cdh/dbs/orapwTDB184A_format12 file=$cdh/dbs/orapwTDB184A
+orapwd describe file=$cdh/dbs/orapwTDB184A
+```
+
+Erstellen Sie ein Mapping für den DBA Ian Fleming *CN=Ian Fleming,OU=Information Technology,OU=People,DC=trivadislabs,DC=com*
+
+```sql
+CREATE USER fleming IDENTIFIED GLOBALLY AS
+'CN=Ian Fleming,OU=Information Technology,OU=People,DC=trivadislabs,DC=com';
+GRANT SYSDBA TO fleming;
+GRANT connect TO fleming;
+GRANT SELECT ON v_$session TO fleming;
+```
+
+Verbinden Sie sich mit und ohne SYSDB als Ian Fleming. Was für Rechte sowie Authentifizerungsinformationen finden Sie?
+
+```sql
+CONNECT "fleming@TRIVADISLABS.COM"/LAB01schulung@TDB184A
+SELECT * FROM session_roles;
+show user
+@sousrinf
+```
+
+Versuchen Sie ein weiteres Mapping auf einen anderen global shared Datenbankbenutzer zu machen. Funktioniert das? Was gibt dies für Probleme? 
 
 # Übungen: Oracle Unified Directory
 
+**Übungsziele:** Erstellen OUD Directory Server Instanz sowie einer OUD Proxy Server Instanz für die Active Directory Integration. Die Proxy Server Instanz wird im Folgenden für die Übungen mit Enterprise User Security benötigt.
 
-## Einführung in Oracle Unified Directory
+Arbeitsumgebung für die Übung:
 
-OUD ist super
+* **Server:** oud.trivadislabs.com
+* **Benutzer:** oracle
+
+## Oracle Unified Directory Server Instanz
+
+Erstellen Sie eine OUD Directory Server Instanz mit ``oud-setup``. Wenn ein X11 Client vorhanden ist, wird das Tool im GUI Mode gestartet. Falls kein X11 Client wird automatisch in den Character mode gewechselt. 
+
+```bash
+export ORACLE_HOME=/u01/instances/oud_ad/OUD
+cd $ORACLE_HOME
+```
+
+Verwenden Sie für die OUD Instanz folgende Angaben:
+
+* Instance Path : **/u01/instances/oud_ad/OUD**
+* Do you want to enable the LDAP administration port? Note that some of the OUD
+tools require this port to be enabled (yes / no) [yes]: **yes**
+* On which port would you like the LDAP Administration Connector to accept connections? [4444]: **4444**
+* Do you want to enable the HTTP administration port? (yes / no) [no]: **no**
+* What would you like to use as the initial root user DN for the Directory Server? [cn=Directory Manager]: **cn=Directory Manager**
+* Please provide the password to use for the initial root user: **LAB01schulung**
+* Do you want to enable LDAP? (yes / no) [yes]: **yes**
+* On which port would you like the Directory Server to accept connections from LDAP clients? [1389]: **2389**
+* Do you want to enable Start TLS on LDAP Port '2389'? (yes / no) [no]: **yes**
+* Do you want to enable HTTP? (yes / no) [no]: **no**
+* Do you want to enable LDAPS? (yes / no) [no]: **yes**
+* On which port would you like the Directory Server to accept connections from LDAPS clients? [1636]: **2636**
+* Do you want to enable HTTPS? (yes / no) [no]: **no**
+* Select Certificate server options: **1**
+* Provide the fully-qualified host name or IP address that will be used to generate the self-signed certificate [oud.trivadislabs.com]: **oud.trivadislabs.com**
+* Do you want to create base DNs in the server? (yes / no) [yes]: **yes**
+* Provide the base DN for the directory data: [dc=example,dc=com]: **dc=trivadislabs,dc=com**
+* Options for populating the database: **1**
+* Specify the Oracle components with which the server integrates: **1** EUS wird später als Zusatzaufgabe manuell konfiguriert.
+* How do you want the OUD server to be tuned? **2**
+* How do you want the off-line tools (import-ldif, export-ldif, verify-index and rebuild-index) to be tuned? **3**
+* Do you want to start the server when the configuration is completed? (yes / no) [yes]: **yes**
+* What would you like to do? **1**, 2 oder 3 Wobei dann effektiv 1 gewählt werden muss um die Instanz anzulegen.
+
+Erstellen Sie einen Eintrag in der oudtab Datei. Diese wird für das Setzen der Umgebung mit OUD base benötigt.
+
+```bash
+echo "oud_ad:2389:2636:4444::OUD:N" >> ${ETC_BASE}/oudtab
+```
+
+Laden Sie die Umgebung für die Instanz oud_ad neu.
+
+```bash
+. oudenv.sh oud_ad
+```
+
+Wir haben nun eine simple OUD Directory Server Instanz erstellt. Die Instanz enthält aktuell nichts weiteres als den Basis Eintrag *dc=trivadislabs,dc=com*. Im Rahmen der Zusatzaufgaben wird diese Instanz weiter genutzt.
+
+## Oracle Unified Directory Proxy Instanz
 
 
-## OUD Directroy Server und AD Proxy
-
-gibt beides DS und Proxy
 
 
-## Oracle Unified Directory, Hochverfügbarkeit und Backup & Recovery
+## Oracle Unified Directory Services Manager
 
-halt wichtig
+Oracle Unified Directory Services Manager (OUDSM) wird dient als Weboberfläche für die OUD Instanzen. Mit dem OUDSM sind eine einfache Administration sowie der Zugriff auf den LDAP Baum möglich. OUDSM wird mit einer entsprechenden Python Procedure und dem ``wlst.sh`` Tool erstellt. Das passende Python Script ``create_oudsm_domain.py`` steht im Verzeichnis ``$cdl/doag2018/lab/05_oud/`` zur Verfügung.
+
+1. Setzen eines Admin Passwortes in ``create_oudsm_domain.py``
+
+```bash
+sed -i -e "s|ADMIN_PASSWORD|LAB01schulung|g" $cdl/doag2018/lab/05_oud/create_oudsm_domain.py
+```
+
+2. Oracle Home auf die Oracle collocated Installation setzten und die OUDSM Domain erstellen.
+
+```bash
+export DOMAIN_NAME="oudsm_domain"
+export DOMAIN_HOME="/u01/domains/oudsm_domain"
+export PORT=7001
+export PORT_SSL=7002
+export ADMIN_USER="weblogic"
+export ORACLE_HOME="/u00/app/oracle/product/fmw12.2.1.3.0"
+
+${ORACLE_HOME}/oracle_common/common/bin/wlst.sh \
+    -skipWLSModuleScanning $cdl/doag2018/lab/05_oud/create_oudsm_domain.py
+```
+
+3. OUDTAB Eintrag für OUDSM erstellen und Umgebung mit OUDBase setzten.
+
+```bash
+echo "oudsm_domain:7001:7002:::OUDSM:N" >> ${ETC_BASE}/oudtab
+. oudenv.sh oudsm_domain
+```
+
+4. Starten von OUDSM mit nohup. Nach einigen Minuten kann vom Active Directory Server auf die URL [http://oud.trivadislabs.com:7001/oudsm](http://oud.trivadislabs.com:7001/oudsm) vom OUDSM zugeriffen werden. Status im OUDSM Logfile respektive nohup.out File muss auf *RUNNING* stehen.
+
+```bash
+. oudenv.sh oudsm_domain
+nohup /u01/domains/oudsm_domain/startWebLogic.sh &
+```
+
+## Administration, Hochverfügbarkeit und Backup & Recovery
+
+Anzeigen der definierten Backends zu einer OUD Instanz.
+
+```bash
+. oudenv.sh oud_ad
+list-backends
+```
+
+Sichern aller Backends mit ``backup``. Dabei soll ein Fullbackup in das Verzeichnis ``/u01/backup/oud_ad`` gemacht werden. Zusätzlich wird das Backup noch komprimiert. Damit dass backup nicht interactiv erstellt werden muss, wird zudem dass Passwort in ein File abgespeichert.
+
+```bash
+echo "LAB01schulung" >/u01/admin/oud_ad/etc/oud_ad_pwd.txt
+chmod 600 /u01/admin/oud_ad/etc/oud_ad_pwd.txt
+. oudenv.sh oud_ad
+mkdir -p /u01/backup/oud_ad
+
+backup --bindPasswordFile $PWD_FILE \
+    --backUpAll --trustAll --compress \
+    --backupDirectory /u01/backup/oud_ad/
+```
+
+Alternativ lässt sich das gleich Backup auch mit dem Skript ``oud_backup.sh`` aus OUD Base erstellen. Das Skript bietet zudem 2-3 zusätzliche Features wie Backup mehrerer Instanzen, Versand von e-Mails etc.
+
+```bash
+oud_backup.sh -h
+
+oud_backup.sh -v
+```
+
 
 # Übungen: Oracle Enterprise User Security
 
-Allgemein
+**Übungsziele:** Konfiguration von Enterprise User Security auf dem Datenbank Server. Erst von Mappings für verschieden Anwendungsfälle. Authentifizierung und Autorisierung mit Enterprise User Security sowie erfolgreichem Login mit Passwort sowie Kerberos Authentifizierung.
 
 ## Übungen Oracle Enterprise User Security Teil 1
 
@@ -458,7 +776,3 @@ Oracle Unified Directory, Hochverfügbarkeit und Backup & Recovery
 ## Troubleshooting Enterprise User Security
 
 fehler gibt es immer
-
-# Zusammenfassung und Abschluss
-
-Das war's mit Tricks und Gägs, tschouzäme
