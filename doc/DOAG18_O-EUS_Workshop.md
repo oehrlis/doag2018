@@ -760,6 +760,14 @@ oud_backup.sh -h
 oud_backup.sh -v
 ```
 
+Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
+
+* Anpassen weitere 
+* LDIF Export des ganzen Directories oder eines Teilbaumes
+* Erstellen einer weiteren Instanz für den Aufbau einer Replikationsumgebung
+    * Zweite Instanz anlegen analog oud_ad oder oud_adproxy. Entsprechend andere Ports und Instanz Name wählen
+    * Konfiguration der Replikation mit ``dsreplication`` oder via OUDSM.
+
 
 # Übungen: Oracle Enterprise User Security
 

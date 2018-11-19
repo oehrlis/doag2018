@@ -2,11 +2,11 @@
 * tnsnames.ora files auf ad und server sowie lab folder
 * dsi.ora files auf ad und server sowie lab folder
 * krb5.conf files auf ad und server sowie lab folder
-* certificate files auf ad und server sowie lab folder
+* certificate files auf ad und server sowie lab folder DONE
 * ports in FW für alles öffnen 1521, 7001,7002, 1389, 1636, etc
 * user db.trivadislabs.com sowie oracle18c voranlegen
-* short cut cmd.exe auf desktop
-* install CA auf AD Server
+* short cut cmd.exe auf desktop DONE
+* install CA auf AD Server DONE
 
 
 
