@@ -651,7 +651,7 @@ Verwenden Sie für die OUD Instanz folgende Angaben:
 * Instance Path : **/u01/instances/oud_ad/OUD**
 * Do you want to enable the LDAP administration port? Note that some of the OUD
 tools require this port to be enabled (yes / no) [yes]: **yes**
-* On which port would you like the LDAP Administration Connector to accept connections? [4444]: **4444**
+* On which port would you like the LDAP Administration Connector to accept connections? [4444]: **5444**
 * Do you want to enable the HTTP administration port? (yes / no) [no]: **no**
 * What would you like to use as the initial root user DN for the Directory Server? [cn=Directory Manager]: **cn=Directory Manager**
 * Please provide the password to use for the initial root user: **LAB01schulung**
@@ -676,7 +676,7 @@ tools require this port to be enabled (yes / no) [yes]: **yes**
 Erstellen Sie einen Eintrag in der oudtab Datei. Diese wird für das Setzen der Umgebung mit OUD base benötigt.
 
 ```bash
-echo "oud_ad:2389:2636:4444::OUD:N" >> ${ETC_BASE}/oudtab
+echo "oud_ad:2389:2636:5444::OUD:N" >> ${ETC_BASE}/oudtab
 ```
 
 Laden Sie die Umgebung für die Instanz oud_ad neu.
@@ -689,8 +689,78 @@ Wir haben nun eine simple OUD Directory Server Instanz erstellt. Die Instanz ent
 
 ## Oracle Unified Directory Proxy Instanz
 
+Für die Konfiguration der Proxy besteht die Möglichkeit den GUI Mode zu verwenden oder direkt ``oud-proxy-setup`` mit cli Parameter. Im folgenden werden wir die OUD Proxy Instanz schrittweise mit Scripten konfigurieren.
 
+1. Vorbereiten der Umgebung. Erstellen eines OUDTAB Eintrages und laden der Umgebung.
 
+```bash
+echo "oud_adproxy:1389:1636:4444::OUD:Y" >> ${ETC_BASE}/oudtab 
+mkdir /u01/admin/oud_adproxy/etc
+echo "LAB01schulung" >/u01/admin/oud_adproxy/etc/oud_adproxy_pwd.txt
+. oudenv.sh oud_adproxy
+```
+
+2. Kopieren der Template Scripte von OUD Base
+
+```bash
+cp $cdl/doag2018/lab/05_oud/*.sh /u01/admin/oud_adproxy/create
+```
+
+3. Anpassen respektive Prüfen der Parameter in ``00_init_environment``. 
+
+```bash
+vi /u01/admin/oud_adproxy/create/00_init_environment
+```
+
+4. Erstellen der OUD Instanz *oud_adproxy* durch Aufrufen von ``01_create_eus_proxy_instance.sh``. Das Wrapper Skript erstellt mit ``oud-proxy-setup`` eine OUD Proxy Instanz mit AD Integration. Schauen Sie sich das Script vor der Ausfürhung kurz an.
+
+```bash
+less /u01/admin/oud_adproxy/create/01_create_eus_proxy_instance.sh
+/u01/admin/oud_adproxy/create/01_create_eus_proxy_instance.sh
+```
+
+5. Anpassen der Konfiguration für die Instanz *oud_adproxy* durch Aufrufen von ``02_config_eus_context.sh``. Das Wrapper Skript führt die ``dsconfig`` Kommandos aus der Datei ``02_config_eus_context.conf`` im Batch Mode aus. Mit den dsconfig Kommandos werden die Workflows für die AD Integration angepasst sowie Transformation Workflows für die AD spezifischen Attributte erstellt. Im GUI Mode wird dies vom GUI direkt gemacht. Schauen Sie sich das Script und die Konfig Datei vor der Ausfürhung kurz an.
+
+```bash
+less /u01/admin/oud_adproxy/create/02_config_eus_context.conf
+less /u01/admin/oud_adproxy/create/02_config_eus_context.sh
+/u01/admin/oud_adproxy/create/02_config_eus_context.sh
+```
+
+1. Mit dem folgenden Script wird der Oracle Context angepasst. Es werden sowohl die Standartwerte für die Benutzer sowie Gruppen Suche festgelegt. Dieser Schritt muss unabhängig ob CLI oder GUI Mode immer manuell ausgeführt werden.
+
+```bash
+less /u01/admin/oud_adproxy/create/03_config_eus_realm.ldif
+less /u01/admin/oud_adproxy/create/03_config_eus_realm.sh
+/u01/admin/oud_adproxy/create/03_config_eus_realm.sh
+```
+
+7. Anpassen der OUD Instanz. Neben den verschiedenen Logger werden unter anderem zwei Punkte angepasst, welche in der MOS Notes 2001851.1 ausführlicher beschrieben wird.
+
+```bash
+less /u01/admin/oud_adproxy/create/04_config_oud_ad_proxy.conf
+less /u01/admin/oud_adproxy/create/04_config_oud_ad_proxy.sh
+/u01/admin/oud_adproxy/create/04_config_oud_ad_proxy.sh
+```
+
+8. Oracle Enterprise User Security respektive das ``eusm`` Tool führt jeweils eine SASL Authentifizierung aus. Damit dies auch mit dem ``dbca`` sowie ``eusm`` klappt, muss das Passwort des verwendeten Benutzers mit einem *reversable* Passwort Hash abgelegt sein. D.h. in dem Fall *AES*. Aktuell verwenden wir den Benutzer *cn=Directory Manager*. Im Folgenden Skript wird die Passwort Policy erweitert und anschliessend das Passwort vom Benutzer *cn=Directory Manager* neu gesetzt.
+
+```bash
+less /u01/admin/oud_adproxy/create/05_update_directory_manager.sh
+/u01/admin/oud_adproxy/create/05_update_directory_manager.sh
+```
+
+9. Abschliessend legen wir noch weitere Admin benutzer für die OUD administration an.
+
+```bash
+less /u01/admin/oud_adproxy/create/06_create_root_users.ldif
+less /u01/admin/oud_adproxy/create/06_create_root_users.sh
+less /u01/admin/oud_adproxy/create/07_create_eusadmin_users.sh
+/u01/admin/oud_adproxy/create/07_create_eusadmin_users.sh
+/u01/admin/oud_adproxy/create/06_create_root_users.sh
+```
+
+Mit den Scripts haben wir nun ein OUD AD Proxy instanz erstellt. Sie können Sich den Inhalt mit dem Directory Manager oder im folgenden mit dem OUDSM.
 
 ## Oracle Unified Directory Services Manager
 
@@ -730,7 +800,7 @@ echo "oudsm_domain:7001:7002:::OUDSM:N" >> ${ETC_BASE}/oudtab
 nohup /u01/domains/oudsm_domain/startWebLogic.sh &
 ```
 
-## Administration, Hochverfügbarkeit und Backup & Recovery
+## Zusatzaufgaben: Administration, Hochverfügbarkeit und Backup & Recovery
 
 Anzeigen der definierten Backends zu einer OUD Instanz.
 
@@ -767,7 +837,7 @@ Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
 * Erstellen einer weiteren Instanz für den Aufbau einer Replikationsumgebung
     * Zweite Instanz anlegen analog oud_ad oder oud_adproxy. Entsprechend andere Ports und Instanz Name wählen
     * Konfiguration der Replikation mit ``dsreplication`` oder via OUDSM.
-
+* Erstellen Sie mit ``create-suffix`` manuell einen EUS Suffix in der OUD Instanz. Was benötigt man noch, damit dieser Suffix auf für EUS verwendet werden kann. 
 
 # Übungen: Oracle Enterprise User Security
 
@@ -775,12 +845,12 @@ Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
 
 ## Übungen Oracle Enterprise User Security Teil 1
 
-Kaffeepause Nachmittag
+* Anpassen der SQLNet Konfiguration für die DB TDB122A
+* Registrierung der DB TDB122A mit dem DBCA
 
 ## Übungen Oracle Enterprise User Security Teil 2
 
-Oracle Unified Directory, Hochverfügbarkeit und Backup & Recovery
+* Erstellen Sie ein Mapping für die User in der Gruppe *Trivadis LAB Users*.
+* Erstellen Sie ein Enterprise Rolle
+* Erstellen Sie eine Enteprise Rolle für die Proxy Authentifizierung
 
-## Troubleshooting Enterprise User Security
-
-fehler gibt es immer
