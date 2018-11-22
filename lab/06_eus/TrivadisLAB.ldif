@@ -1,0 +1,198 @@
+version: 1
+
+dn: OU=Groups,DC=trivadislabs,DC=com
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+distinguishedName: OU=Groups,DC=trivadislabs,DC=com
+name: Groups
+dSCorePropagationData: 20181120215533.0Z
+dSCorePropagationData: 16010101000000.0Z
+instanceType: 4
+objectCategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,DC=trivadi
+ slabs,DC=com
+objectGUID:: bzbvv73vv70d77+977+9Se+/ve+/vRzvv71A77+9
+uSNChanged: 12949
+uSNCreated: 12948
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+
+dn: CN=Trivadis LAB Users,OU=Groups,DC=trivadislabs,DC=com
+objectClass: groupofnames
+objectClass: group
+objectClass: top
+cn: Trivadis LAB Users
+displayName: Trivadis LAB Users
+distinguishedName: CN=Trivadis LAB Users,OU=Groups,DC=trivadislabs,DC=com
+member: CN=Vesper Lynd,OU=Human Resources,OU=People,DC=trivadislabs,DC=com
+member: CN=Tina Turner,OU=Sales,OU=People,DC=trivadislabs,DC=com
+member: CN=Paul Ward,OU=Sales,OU=People,DC=trivadislabs,DC=com
+member: CN=Paul Smith,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Monica Blake,OU=Sales,OU=People,DC=trivadislabs,DC=com
+member: CN=John Gartner,OU=Information Technology,OU=People,DC=trivadislabs,
+ DC=com
+member: CN=John Miller,OU=Accounting,OU=People,DC=trivadislabs,DC=com
+member: CN=Jim Clark,OU=Accounting,OU=People,DC=trivadislabs,DC=com
+member: CN=Jason  Walters,OU=Operations,OU=People,DC=trivadislabs,DC=com
+member: CN=James Bond,OU=Operations,OU=People,DC=trivadislabs,DC=com
+member: CN=James Scott,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Ian Fleming,OU=Information Technology,OU=People,DC=trivadislabs,D
+ C=com
+member: CN=Honey Rider,OU=Human Resources,OU=People,DC=trivadislabs,DC=com
+member: CN=Henry Ford,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Felix Leitner,OU=Operations,OU=People,DC=trivadislabs,DC=com
+member: CN=Eve Moneypenny,OU=Sales,OU=People,DC=trivadislabs,DC=com
+member: CN=Eugen Tanner,OU=Information Technology,OU=People,DC=trivadislabs,
+ DC=com
+member: CN=Ernst Blofeld,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Douglas Adams,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Ben King,OU=Senior Management,OU=People,DC=trivadislabs,DC=com
+member: CN=Andy Renton,OU=Operations,OU=People,DC=trivadislabs,DC=com
+memberOf: CN=ORA_VFR_11G,CN=Users,DC=trivadislabs,DC=com
+memberOf: CN=ORA_VFR_12C,CN=Users,DC=trivadislabs,DC=com
+memberOf: CN=Remote Desktop Users,CN=Builtin,DC=trivadislabs,DC=com
+name: Trivadis LAB Users
+uid: Trivadis LAB Users
+dSCorePropagationData: 16010101000000.0Z
+groupType: -2147483646
+instanceType: 4
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=trivadislabs,DC=com
+objectGUID:: cWLvv73vv70/cu+/vUbvv70/77+977+9Ye+/vR3vv70=
+objectSid:: AQUAAAAAAAUVAAAAElHvv73vv71Z77+9NRcu77+9alBkBAAA
+sAMAccountType: 268435456
+uSNChanged: 12995
+uSNCreated: 12951
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+
+dn: CN=Trivadis LAB DB Admins,OU=Groups,DC=trivadislabs,DC=com
+objectClass: groupofnames
+objectClass: group
+objectClass: top
+cn: Trivadis LAB DB Admins
+displayName: Trivadis LAB DB Admins
+distinguishedName: CN=Trivadis LAB DB Admins,OU=Groups,DC=trivadislabs,DC=co
+ m
+member: CN=John Gartner,OU=Information Technology,OU=People,DC=trivadislabs,
+ DC=com
+member: CN=Ian Fleming,OU=Information Technology,OU=People,DC=trivadislabs,D
+ C=com
+name: Trivadis LAB DB Admins
+uid: Trivadis LAB DB Admins
+dSCorePropagationData: 16010101000000.0Z
+groupType: -2147483646
+instanceType: 4
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=trivadislabs,DC=com
+objectGUID:: ZlEo77+9GC3vv71J77+9yIPvv71bce+/vTE=
+objectSid:: AQUAAAAAAAUVAAAAElHvv73vv71Z77+9NRcu77+9alBlBAAA
+sAMAccountType: 268435456
+uSNChanged: 13004
+uSNCreated: 12998
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+
+dn: CN=Trivadis LAB Developers,OU=Groups,DC=trivadislabs,DC=com
+objectClass: groupofnames
+objectClass: group
+objectClass: top
+cn: Trivadis LAB Developers
+displayName: Trivadis LAB Developers
+distinguishedName: CN=Trivadis LAB Developers,OU=Groups,DC=trivadislabs,DC=c
+ om
+member: CN=Paul Smith,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=James Scott,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Henry Ford,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Ernst Blofeld,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Douglas Adams,OU=Research,OU=People,DC=trivadislabs,DC=com
+name: Trivadis LAB Developers
+uid: Trivadis LAB Developers
+dSCorePropagationData: 16010101000000.0Z
+groupType: -2147483646
+instanceType: 4
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=trivadislabs,DC=com
+objectGUID:: 77+9Lu+/ve+/vT/vv73vv71C77+9fRzvv71/Cu+/ve+/vQ==
+objectSid:: AQUAAAAAAAUVAAAAElHvv73vv71Z77+9NRcu77+9alBmBAAA
+sAMAccountType: 268435456
+uSNChanged: 13019
+uSNCreated: 13007
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+
+dn: CN=Trivadis LAB System Admins,OU=Groups,DC=trivadislabs,DC=com
+objectClass: groupofnames
+objectClass: group
+objectClass: top
+cn: Trivadis LAB System Admins
+displayName: Trivadis LAB System Admins
+distinguishedName: CN=Trivadis LAB System Admins,OU=Groups,DC=trivadislabs,D
+ C=com
+member: CN=Ian Fleming,OU=Information Technology,OU=People,DC=trivadislabs,D
+ C=com
+member: CN=Eugen Tanner,OU=Information Technology,OU=People,DC=trivadislabs,
+ DC=com
+name: Trivadis LAB System Admins
+uid: Trivadis LAB System Admins
+dSCorePropagationData: 16010101000000.0Z
+groupType: -2147483646
+instanceType: 4
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=trivadislabs,DC=com
+objectGUID:: X1AJAhNE77+9SO+/ve+/vVTvv73vv73vv73vv70L
+objectSid:: AQUAAAAAAAUVAAAAElHvv73vv71Z77+9NRcu77+9alBnBAAA
+sAMAccountType: 268435456
+uSNChanged: 13028
+uSNCreated: 13022
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+
+dn: CN=Trivadis LAB APP Admins,OU=Groups,DC=trivadislabs,DC=com
+objectClass: groupofnames
+objectClass: group
+objectClass: top
+cn: Trivadis LAB APP Admins
+displayName: Trivadis LAB APP Admins
+distinguishedName: CN=Trivadis LAB APP Admins,OU=Groups,DC=trivadislabs,DC=c
+ om
+name: Trivadis LAB APP Admins
+uid: Trivadis LAB APP Admins
+dSCorePropagationData: 16010101000000.0Z
+groupType: -2147483646
+instanceType: 4
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=trivadislabs,DC=com
+objectGUID:: fO+/vQbvv73vv73Mr0bvv70DRHg+77+9Zkw=
+objectSid:: AQUAAAAAAAUVAAAAElHvv73vv71Z77+9NRcu77+9alBoBAAA
+sAMAccountType: 268435456
+uSNChanged: 13031
+uSNCreated: 13031
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+
+dn: CN=Trivadis LAB Management,OU=Groups,DC=trivadislabs,DC=com
+objectClass: groupofnames
+objectClass: group
+objectClass: top
+cn: Trivadis LAB Management
+displayName: Trivadis LAB Management
+distinguishedName: CN=Trivadis LAB Management,OU=Groups,DC=trivadislabs,DC=c
+ om
+member: CN=Jim Clark,OU=Accounting,OU=People,DC=trivadislabs,DC=com
+member: CN=Ian Fleming,OU=Information Technology,OU=People,DC=trivadislabs,D
+ C=com
+member: CN=Honey Rider,OU=Human Resources,OU=People,DC=trivadislabs,DC=com
+member: CN=Felix Leitner,OU=Operations,OU=People,DC=trivadislabs,DC=com
+member: CN=Eve Moneypenny,OU=Sales,OU=People,DC=trivadislabs,DC=com
+member: CN=Ernst Blofeld,OU=Research,OU=People,DC=trivadislabs,DC=com
+member: CN=Ben King,OU=Senior Management,OU=People,DC=trivadislabs,DC=com
+name: Trivadis LAB Management
+uid: Trivadis LAB Management
+dSCorePropagationData: 16010101000000.0Z
+groupType: -2147483646
+instanceType: 4
+objectCategory: CN=Group,CN=Schema,CN=Configuration,DC=trivadislabs,DC=com
+objectGUID:: MO+/ve+/vSld77+9FUfvv73vv73vv71GJXFQ
+objectSid:: AQUAAAAAAAUVAAAAElHvv73vv71Z77+9NRcu77+9alBpBAAA
+sAMAccountType: 268435456
+uSNChanged: 13051
+uSNCreated: 13035
+whenChanged: 20181120215533.0Z
+whenCreated: 20181120215533.0Z
+

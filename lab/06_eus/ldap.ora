@@ -16,7 +16,7 @@
 # Modified...:
 # see git revision history for more information on changes/updates
 # ---------------------------------------------------------------------------
-DIRECTORY_SERVERS = (oud.trivadislabs.com:389:636)
+DIRECTORY_SERVERS = (oud.trivadislabs.com:1389:1636)
 DEFAULT_ADMIN_CONTEXT = "dc=trivadislabs,dc=com"
 DIRECTORY_SERVER_TYPE = OID
 # --- EOF --------------------------------------------------------------------
