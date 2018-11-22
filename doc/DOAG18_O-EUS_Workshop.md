@@ -2,8 +2,8 @@
 title: "DOAG Schulungstag 2018"
 subtitle: "Übungen zum Workshop Oracle EUS mit OUD und AD Integration"
 author: [Stefan Oehrli]
-date: "21 November 2018"
-tvddocversion: 0.9
+date: "22 November 2018"
+tvddocversion: 1.0
 papersize: a4 
 listings-disable-line-numbers: true
 titlepage: true
