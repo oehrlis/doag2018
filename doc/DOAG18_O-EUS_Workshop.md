@@ -2,7 +2,7 @@
 title: "DOAG Schulungstag 2018"
 subtitle: "Übungen zum Workshop Oracle EUS mit OUD und AD Integration"
 author: [Stefan Oehrli]
-date: "20 November 2018"
+date: "21 November 2018"
 tvddocversion: 0.9
 papersize: a4 
 listings-disable-line-numbers: true
@@ -195,11 +195,13 @@ sqlplus scott/tiger
 show user
 ```
 
-5. Anpassen des SQLNet Parameter *ALLOWED_LOGON_VERSION_CLIENT* uns setzen des 11 Authentifizierungsprotokolls.
+1. Anpassen des SQLNet Parameter *ALLOWED_LOGON_VERSION_CLIENT* und *ALLOWED_LOGON_VERSION_SERVER*, setzen des 11 Authentifizierungsprotokolls.
 
 ```bash
 sed -i "s|#ALLOWED_LOGON_VERSION_CLIENT.*|SQLNET.ALLOWED_LOGON_VERSION_CLIENT=11|" $cdn/admin/sqlnet.ora
 sed -i "s|SQLNET.ALLOWED_LOGON_VERSION_CLIENT.*|SQLNET.ALLOWED_LOGON_VERSION_CLIENT=11|" $cdn/admin/sqlnet.ora
+sed -i "s|#SQLNET.ALLOWED_LOGON_VERSION_SERVER.*|SQLNET.ALLOWED_LOGON_VERSION_SERVER=11|" $cdn/admin/sqlnet.ora
+sed -i "s|SQLNET.ALLOWED_LOGON_VERSION_SERVER.*|SQLNET.ALLOWED_LOGON_VERSION_SERVER=11|" $cdn/admin/sqlnet.ora
 ```
 
 6. Als User Scott verbinden. Kann man sich überhaupt verbinden?
@@ -219,7 +221,10 @@ ALTER USER scott IDENTIFIED BY tiger;
 
 set linesize 120 pagesize 200
 col USERNAME for a25
+col password for a16
+col spare4 for a40
 SELECT username, password_versions FROM dba_users WHERE username='SCOTT';
+SELECT password, spare4 FROM user$ WHERE name='SCOTT';
 ```
 
 ## Zusatzaufgaben
@@ -262,12 +267,6 @@ Kopieren Sie die Keytab Datei mit WinSCP auf den Datenbank Sever in das Verzeich
 "C:\Program Files\PuTTY\pscp.exe" C:\u00\app\oracle\network\admin\db.trivadislabs.com.keytab db.trivadislabs.com:/u00/app/oracle/network/admin
 ```
 
-Nachdem die Keytab Datei auf dem Datenbank Server kopiert worden ist, kann mit ``oklist`` überprüft werden was die Datei für Crypto Algorithmen untersützt. Somit wird zudem indirekt geprüft ob die Keytab Datei verwendet werden kann.
-
-```bash
-oklist -e -k $cdn/admin/db.trivadislabs.com.keytab
-```
-
 ## SQLNet Konfiguration
 
 Arbeitsumgebung für die Übung:
@@ -278,6 +277,7 @@ Arbeitsumgebung für die Übung:
 Ergänzen Sie die ``sqlnet.ora`` Datei mit folgenden Parametern. Eine Beispiel Konfigurationsdatei ist im Verzeichnis ``$cdl/doag2018/lab/03_krb`` vorhanden.
 
 ```bash
+cp $cdl/doag2018/lab/03_krb/sqlnet.ora $cdn/admin/sqlnet.ora
 vi $cdn/admin/sqlnet.ora
 ##########################################################################
 # Kerberos Configuration
@@ -295,6 +295,8 @@ SQLNET.AUTHENTICATION_KERBEROS5_SERVICE = oracle
 Erstellen Sie die Kerberos Konfigurationsdatei ``krb5.conf`` mit folgendem Inhalt. Eine Beispiel Konfigurationsdatei ist im Verzeichnis ``$cdl/doag2018/lab/03_krb`` vorhanden.
 
 ```bash
+cp $cdl/doag2018/lab/03_krb/krb5.conf $cdn/admin/krb5.conf
+vi $cdn/admin/krb5.conf 
 [libdefaults]
  default_realm = TRIVADISLABS.COM
  clockskew=300
@@ -313,6 +315,12 @@ Erstellen Sie die Kerberos Konfigurationsdatei ``krb5.conf`` mit folgendem Inhal
 trivadislabs.com = TRIVADISLABS.COM
 ```
 
+Nachdem die Keytab Datei auf dem Datenbank Server kopiert worden ist, kann mit ``oklist`` überprüft werden was die Datei für Crypto Algorithmen untersützt. Somit wird zudem indirekt geprüft ob die Keytab Datei verwendet werden kann.
+
+```bash
+oklist -e -k $cdn/admin/db.trivadislabs.com.keytab
+```
+
 Kontrollieren Sie ob die Namensauflösung wie gewünscht funktioniert.
 
 ```bash
@@ -326,6 +334,8 @@ Erstellen Sie anschliessend mit``okinit`` manuell ein Session Ticket.
 
 ```Bash
 okinit king@TRIVADISLABS.COM
+
+oklist
 ```
 
 ## Kerberos Authentifizierung
@@ -392,7 +402,7 @@ Die folgenden Arbeiten werden in der Regel in zusammenarbeit mit dem Windows res
 Für das Oracle Wallet wird das Root Zertifikat vom Active Directory Server benötigt. Diesen kann in der Übungsumgebung einfach via Commandline exportiert werden. Öffnen Sie dazu ein Command Prompt (``cmd.exe``) und exportieren das Root Zertifikat. Das exportiert Root Zertifikat müssen Sie anschliessend mit WinSCP auf den Datenbank Server kopieren in das Verzeichnis ``/u00/app/oracle/network/admin`` kopieren. Alternativ können Sie auch das unten aufgeführte Putty SCP Kommando verwenden.
 
 ```bash
-certutil -encode -ca.cert c:\u00\app\oracle\network\admin\Trivadis_LAB_root.cer
+certutil -ca.cert c:\u00\app\oracle\network\admin\Trivadis_LAB_root.cer
 
 "C:\Program Files\PuTTY\pscp.exe" c:\u00\app\oracle\network\admin\Trivadis_LAB_root.cer db.trivadislabs.com:/u00/app/oracle/network/admin
 ```
@@ -403,7 +413,13 @@ Um Oracle CMU mit Passwort Authentifizierung verwenden zu können, muss Active D
 "C:\Program Files\PuTTY\pscp.exe" db.trivadislabs.com:/u00/app/oracle/product/18.4.0.0/bin/opwdintg.exe c:\u00\app\oracle\network\admin\
 ```
 
-Anschliessend muss die Datei auf dem Active Directory ausgeführt werden, um das AD Schema zu erweitern und das Passwort Filter Plugin zu installieren. Öffnen Sie dazu ein Command Prompt (``cmd.exe``) und führen ``opwdintg.exe`` aus. Bei der Installstion sind folgende Fragen mit Ja respektive Yes zu beantworten:
+Anschliessend muss die Datei auf dem Active Directory ausgeführt werden, um das AD Schema zu erweitern und das Passwort Filter Plugin zu installieren. Öffnen Sie dazu ein Command Prompt (``cmd.exe``) und führen ``opwdintg.exe`` aus. 
+
+```bash
+c:\u00\app\oracle\network\admin\opwdintg.exe
+```
+
+Bei der Installstion sind folgende Fragen mit Ja respektive Yes zu beantworten:
 
 * Do you want to extend AD schema? [Yes/No]: 
 * Schema extension for this domain will be permanent. Continue? [Yes/No]:
@@ -426,7 +442,7 @@ Passen Sie manuell die Passwörter der gewünschten Benutzer an. Dazu müssen Si
 **Variante 2:** Öffnen Sie ein PowerShell Fenster und führen das Script ``c:\doag2018\lab\04_cmu\reset_ad_users.ps1`` aus. Das Script passt sowohl die Gruppe an und änder die Passwörter aller Benutzer. 
 
 ```bash
-c:\doag2018\lab\04_cmu\reset_ad_users.ps1
+C:\u00\app\oracle\local\doag2018\lab\04_cmu\reset_ad_users.ps1
 ```
 
 Prüfen Sie zur Kontrolle bei einem Benutzer, ob das das Attribut *orclCommonAttribute* gesetzt ist. Die folgende Abbildung zeigt die Properties vom Benutzer King und das Attribut *orclCommonAttribute*.
@@ -444,6 +460,8 @@ Arbeitsumgebung für die Übung:
 Erstellen Sie ein SQLNet Konfigurationsdatei ``dsi.ora`` mit den folgenden Informationen zum Aktive Directory Server. Eine Beispiel Konfigurationsdatei ist im Verzeichnis ``$cdl/doag2018/lab/04_cmu`` vorhanden.
 
 ```bash
+cp $cdl/doag2018/lab/04_cmu/dsi.ora $cdn/admin/dsi.ora
+vi $cdn/admin/dsi.ora
 DSI_DIRECTORY_SERVERS = (ad.trivadislabs.com:389:636)
 DSI_DEFAULT_ADMIN_CONTEXT = "dc=trivadislabs,dc=com"
 DSI_DIRECTORY_SERVER_TYPE = AD
@@ -570,6 +588,16 @@ SELECT * FROM session_roles;
 Wie ist das jetzt mit Kerberos? Wenn Sie die Übung zu Kerberos erfolgreich abgeschlossen haben, können sich die Benutzer nun auch mit Kerberos Authentifizieren. Ein Versuch mit dem Benutzer *Bond* schaft hier klarheit. Generieren sie zuerst manuell ein Ticket Granting Ticket mit ``okinit``. Die Passwortabfrage umgehen wir bei diesem Beispiel einfach indem wir das Passwort mit einem ``echo |`` via STDIN an  ``okinit`` schicken. Mit dem Skript ``sousrinf.sql`` sehen wir anschliessend detailierte Informationen zur Authentifizierung.
 
 ```bash
+sqh
+host echo LAB01schulung|okinit bond
+connect /@TDB184A
+SELECT * FROM session_roles;
+
+show user
+@sousrinf.sql
+```
+
+```bash
 echo LAB01schulung|okinit bond
 sqlplus /@TDB184A
 SELECT * FROM session_roles;
@@ -626,6 +654,13 @@ show user
 @sousrinf
 ```
 
+```sql
+CONNECT "fleming@TRIVADISLABS.COM"/LAB01schulung@db.trivadislabs.com:1521/TDB184A as sysdba
+SELECT * FROM session_roles;
+show user
+@sousrinf
+```
+
 Versuchen Sie ein weiteres Mapping auf einen anderen global shared Datenbankbenutzer zu machen. Funktioniert das? Was gibt dies für Probleme? 
 
 # Übungen: Oracle Unified Directory
@@ -642,13 +677,14 @@ Arbeitsumgebung für die Übung:
 Erstellen Sie eine OUD Directory Server Instanz mit ``oud-setup``. Wenn ein X11 Client vorhanden ist, wird das Tool im GUI Mode gestartet. Falls kein X11 Client wird automatisch in den Character mode gewechselt. 
 
 ```bash
-export ORACLE_HOME=/u01/instances/oud_ad/OUD
-cd $ORACLE_HOME
+export ORACLE_HOME=/u00/app/oracle/product/oud12.2.1.3.0
+cd $ORACLE_HOME/oud
+./oud-setup
 ```
 
 Verwenden Sie für die OUD Instanz folgende Angaben:
 
-* Instance Path : **/u01/instances/oud_ad/OUD**
+* Instance Path : **/u01/instances/oud_doag/OUD**
 * Do you want to enable the LDAP administration port? Note that some of the OUD
 tools require this port to be enabled (yes / no) [yes]: **yes**
 * On which port would you like the LDAP Administration Connector to accept connections? [4444]: **5444**
@@ -671,18 +707,20 @@ tools require this port to be enabled (yes / no) [yes]: **yes**
 * How do you want the OUD server to be tuned? **2**
 * How do you want the off-line tools (import-ldif, export-ldif, verify-index and rebuild-index) to be tuned? **3**
 * Do you want to start the server when the configuration is completed? (yes / no) [yes]: **yes**
-* What would you like to do? **1**, 2 oder 3 Wobei dann effektiv 1 gewählt werden muss um die Instanz anzulegen.
+* What would you like to do? **1**, **2** oder **3** Wobei dann effektiv 1 gewählt werden muss um die Instanz anzulegen.
 
 Erstellen Sie einen Eintrag in der oudtab Datei. Diese wird für das Setzen der Umgebung mit OUD base benötigt.
 
 ```bash
-echo "oud_ad:2389:2636:5444::OUD:N" >> ${ETC_BASE}/oudtab
+echo "oud_doag:2389:2636:5444::OUD:N" >> ${ETC_BASE}/oudtab
+mkdir -p /u01/admin/oud_doag/etc/
+echo "LAB01schulung" >/u01/admin/oud_doag/etc/oud_doag_pwd.txt
 ```
 
-Laden Sie die Umgebung für die Instanz oud_ad neu.
+Laden Sie die Umgebung für die Instanz oud_doag neu.
 
 ```bash
-. oudenv.sh oud_ad
+. oudenv.sh oud_doag
 ```
 
 Wir haben nun eine simple OUD Directory Server Instanz erstellt. Die Instanz enthält aktuell nichts weiteres als den Basis Eintrag *dc=trivadislabs,dc=com*. Im Rahmen der Zusatzaufgaben wird diese Instanz weiter genutzt.
@@ -695,7 +733,7 @@ Für die Konfiguration der Proxy besteht die Möglichkeit den GUI Mode zu verwen
 
 ```bash
 echo "oud_adproxy:1389:1636:4444::OUD:Y" >> ${ETC_BASE}/oudtab 
-mkdir /u01/admin/oud_adproxy/etc
+mkdir -p /u01/admin/oud_adproxy/etc
 echo "LAB01schulung" >/u01/admin/oud_adproxy/etc/oud_adproxy_pwd.txt
 . oudenv.sh oud_adproxy
 ```
@@ -703,7 +741,7 @@ echo "LAB01schulung" >/u01/admin/oud_adproxy/etc/oud_adproxy_pwd.txt
 2. Kopieren der Template Scripte von OUD Base
 
 ```bash
-cp $cdl/doag2018/lab/05_oud/*.sh /u01/admin/oud_adproxy/create
+cp $cdl/doag2018/lab/05_oud/??_* /u01/admin/oud_adproxy/create
 ```
 
 3. Anpassen respektive Prüfen der Parameter in ``00_init_environment``. 
@@ -802,24 +840,44 @@ nohup /u01/domains/oudsm_domain/startWebLogic.sh &
 
 ## Zusatzaufgaben: Administration, Hochverfügbarkeit und Backup & Recovery
 
+Stoppen und Starten einer OUD Instanz.
+
+```bash
+. oudenv.sh oud_ad
+stop-ds
+
+start-ds
+```
+
+Anzeigen des Instanz Status. Mit OUD Base Alias *u* respektive *oud_up* oder mit dem OUD *status* Tool.
+
+```bash
+u
+oud_up
+. oudenv.sh oud_doag
+status
+
+status --bindDN "cn=Directory Manager" --bindPasswordFile $PWD_FILE
+```
+
 Anzeigen der definierten Backends zu einer OUD Instanz.
 
 ```bash
-. oudenv.sh oud_ad
+. oudenv.sh oud_doag
 list-backends
 ```
 
-Sichern aller Backends mit ``backup``. Dabei soll ein Fullbackup in das Verzeichnis ``/u01/backup/oud_ad`` gemacht werden. Zusätzlich wird das Backup noch komprimiert. Damit dass backup nicht interactiv erstellt werden muss, wird zudem dass Passwort in ein File abgespeichert.
+Sichern aller Backends mit ``backup``. Dabei soll ein Fullbackup in das Verzeichnis ``/u01/backup/oud_doag`` gemacht werden. Zusätzlich wird das Backup noch komprimiert. Damit dass backup nicht interactiv erstellt werden muss, wird zudem dass Passwort in ein File abgespeichert.
 
 ```bash
-echo "LAB01schulung" >/u01/admin/oud_ad/etc/oud_ad_pwd.txt
-chmod 600 /u01/admin/oud_ad/etc/oud_ad_pwd.txt
-. oudenv.sh oud_ad
-mkdir -p /u01/backup/oud_ad
+echo "LAB01schulung" >/u01/admin/oud_doag/etc/oud_doag_pwd.txt
+chmod 600 /u01/admin/oud_doag/etc/oud_doag_pwd.txt
+. oudenv.sh oud_doag
+mkdir -p /u01/backup/oud_doag
 
 backup --bindPasswordFile $PWD_FILE \
     --backUpAll --trustAll --compress \
-    --backupDirectory /u01/backup/oud_ad/
+    --backupDirectory /u01/backup/oud_doag/
 ```
 
 Alternativ lässt sich das gleich Backup auch mit dem Skript ``oud_backup.sh`` aus OUD Base erstellen. Das Skript bietet zudem 2-3 zusätzliche Features wie Backup mehrerer Instanzen, Versand von e-Mails etc.
@@ -835,7 +893,7 @@ Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
 * Anpassen weitere 
 * LDIF Export des ganzen Directories oder eines Teilbaumes
 * Erstellen einer weiteren Instanz für den Aufbau einer Replikationsumgebung
-    * Zweite Instanz anlegen analog oud_ad oder oud_adproxy. Entsprechend andere Ports und Instanz Name wählen
+    * Zweite Instanz anlegen analog oud_doag oder oud_adproxy. Entsprechend andere Ports und Instanz Name wählen
     * Konfiguration der Replikation mit ``dsreplication`` oder via OUDSM.
 * Erstellen Sie mit ``create-suffix`` manuell einen EUS Suffix in der OUD Instanz. Was benötigt man noch, damit dieser Suffix auf für EUS verwendet werden kann. 
 
@@ -843,14 +901,303 @@ Falls noch Zeit übrig ist, bieten sich folgende Zusatzaufgaben an:
 
 **Übungsziele:** Konfiguration von Enterprise User Security auf dem Datenbank Server. Erst von Mappings für verschieden Anwendungsfälle. Authentifizierung und Autorisierung mit Enterprise User Security sowie erfolgreichem Login mit Passwort sowie Kerberos Authentifizierung.
 
-## Übungen Oracle Enterprise User Security Teil 1
+## SQLNet Konfiguration Enterprise User Security
 
-* Anpassen der SQLNet Konfiguration für die DB TDB122A
-* Registrierung der DB TDB122A mit dem DBCA
+Anpassen der SQLNet Konfiguration für die DB TDB122A respektive für alle Datenbanken auf diesem Server.
 
-## Übungen Oracle Enterprise User Security Teil 2
+```bash
+cp $cdl/doag2018/lab/06_eus/ldap.ora $cdn/admin/ldap.ora
+vi $cdn/admin/ldap.ora
+
+DIRECTORY_SERVERS = (oud.trivadislabs.com:1389:1636)
+DEFAULT_ADMIN_CONTEXT = "dc=trivadislabs,dc=com"
+DIRECTORY_SERVER_TYPE = OID
+```
+
+## Enterprise User Security Datenbank Konfiguration
+
+Registrierung der DB TDB122A mit dem DBCA
+
+```bash
+TDB122A
+
+dbca -configureDatabase -sourceDB $ORACLE_SID -registerWithDirService true \
+    -dirServiceUserName "cn=Directory Manager" -dirServicePassword LAB01schulung \
+    -walletPassword LAB01schulung -silent
+```
+
+## Oracle Enterprise User Security Mappings
+
+* Erstellen Sie ein shared global Schema EUS_USERS
+
+```sql
+CREATE USER eus_user IDENTIFIED GLOBALLY;
+GRANT connect TO eus_user;
+GRANT SELECT ON v_$session TO eus_user;
+```
 
 * Erstellen Sie ein Mapping für die User in der Gruppe *Trivadis LAB Users*.
-* Erstellen Sie ein Enterprise Rolle
-* Erstellen Sie eine Enteprise Rolle für die Proxy Authentifizierung
 
+```bash
+eusm createMapping database_name="$ORACLE_SID" \
+    realm_dn="dc=trivadislabs,dc=com" map_type=SUBTREE \
+    map_dn="ou=People,dc=trivadislabs,dc=com" schema=EUS_USERS \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"  
+```
+
+* Testen Sie die Verbinung als Benutzer Blofeld.
+
+```sql
+CONNECT blofeld/LAB01schulung@TDB122A
+
+show user
+@sousrinf
+SELECT * FROM session_roles;
+```
+
+* Erstellen Sie ein global private Schema
+
+```sql
+CONNECT / AS SYSDBA
+CREATE USER king IDENTIFIED GLOBALLY;
+GRANT connect TO king;
+GRANT SELECT ON v_$session TO king;
+```
+
+* Erstellen Sie ein Mapping für den Benutzer King.
+
+```bash
+eusm createMapping database_name="$ORACLE_SID" \
+    realm_dn="dc=trivadislabs,dc=com" map_type=ENTRY \
+    map_dn="cn=Ben King,ou=Senior Management,ou=People,dc=trivadislabs,dc=com" \
+    schema=KING \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+* Testen Sie die Verbinung als Benutzer King.
+
+```sql
+CONNECT king/LAB01schulung@TDB122A
+
+show user
+@sousrinf
+SELECT * FROM session_roles;
+```
+
+* Testen Sie die Verbinung als Benutzer King mit Kerberos
+
+```sql
+okinit king
+
+sqlplus /@TDB122A
+
+@sousrinf
+SELECT * FROM session_roles;
+```
+
+* Prüfen Sie mit dem OUDSM oder Apache Directory Studio den Inhalt des OUD Proxy.
+* Prüfen Sie die Mappings mit EUSM
+
+```bash
+eusm listMappings database_name="$ORACLE_SID" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+## Oracle Enterprise User Security Rollen
+
+* Erstellen Sie eine globale Datenbank Rolle hr_clerk und hr_mgr.
+
+```sql
+CONNECT / AS SYSDBA
+CREATE ROLE hr_clerk IDENTIFIED GLOBALLY;
+GRANT SELECT ON tvd_hr.employees TO hr_clerk;
+GRANT SELECT ON tvd_hr.jobs TO hr_clerk;
+GRANT SELECT ON tvd_hr.job_history TO hr_clerk;
+GRANT SELECT ON tvd_hr.regions TO hr_clerk;
+GRANT SELECT ON tvd_hr.countries TO hr_clerk;
+GRANT SELECT ON tvd_hr.locations TO hr_clerk;
+GRANT SELECT ON tvd_hr.departments TO hr_clerk;
+
+CREATE ROLE hr_mgr IDENTIFIED GLOBALLY;
+GRANT INSERT,UPDATE,DELETE ON tvd_hr.employees TO hr_mgr;
+GRANT INSERT,UPDATE,DELETE ON tvd_hr.jobs TO hr_mgr;
+GRANT INSERT,UPDATE,DELETE ON tvd_hr.job_history TO hr_mgr;
+GRANT INSERT,UPDATE,DELETE ON tvd_hr.locations TO hr_mgr;
+GRANT INSERT,UPDATE,DELETE ON tvd_hr.departments TO hr_mgr;
+```
+
+* Erstellen Sie eine Enterprise Rolle *HR Clerk* und *HR Management*.
+
+```bash
+eusm createRole enterprise_role="HR Clerk" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+
+eusm createRole enterprise_role="HR Management" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+* Zuweisen der Enterprise Rollen zu der globalen Rolle. Weisen Sie der Einterprise Rolle *HR Management* sowohl *hr_clerk* also auch *hr_mgr* zu.
+  
+```bash
+eusm addGlobalRole enterprise_role="HR Clerk" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" database_name="$ORACLE_SID" \
+    global_role="hr_clerk" dbuser="system" dbuser_password="LAB01schulung" \
+    dbconnect_string="db.trivadislabs.com:1521:$ORACLE_SID" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+
+eusm addGlobalRole enterprise_role="HR Management" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" database_name="$ORACLE_SID" \
+    global_role="hr_clerk" dbuser="system" dbuser_password="LAB01schulung" \
+    dbconnect_string="db.trivadislabs.com:1521:$ORACLE_SID" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+
+eusm addGlobalRole enterprise_role="HR Management" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" database_name="$ORACLE_SID" \
+    global_role="hr_mgr" dbuser="system" dbuser_password="LAB01schulung" \
+    dbconnect_string="db.trivadislabs.com:1521:$ORACLE_SID" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+* Weisen Sie die Rolle Benutzer zu. Erstellen Sie zuerst im AD eine neue Gruppe für HR. Anschliessend nehmen Sie die HR Gruppe für *HR Clerk* und *Honey Rider* für *HR Management*.
+
+```bash
+eusm grantRole enterprise_role="HR Clerk" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    group_dn="CN=Trivadis LAB HR,OU=Groups,DC=trivadislabs,DC=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+
+eusm grantRole enterprise_role="HR Management" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    user_dn="CN=Honey Rider,OU=Human Resources,OU=People,DC=trivadislabs,DC=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+* Loggen Sie siche als *Honey Rider* und *Vesper Lynd* ein. Was haben Sie für Rollen?
+
+```sql
+CONNECT rider/LAB01schulung@TDB122A
+SELECT sys_context('userenv','ENTERPRISE_IDENTITY') FROM DUAL;
+SELECT * FROM session_roles;
+
+CONNECT lynd/LAB01schulung@TDB122A
+show user
+SELECT sys_context('userenv','ENTERPRISE_IDENTITY') FROM DUAL;
+SELECT * FROM session_roles;
+```
+
+* Was Stellen Sie fest? Stimmen die Rollen von *Vesper Lynd*?
+* Weisen Sie im AD *Vesper Lynd* die Richtige Rolle zu und loggen sich sich erneut ein.
+
+```sql
+CONNECT lynd/LAB01schulung@TDB122A
+show user
+SELECT sys_context('userenv','ENTERPRISE_IDENTITY') FROM DUAL;
+SELECT * FROM session_roles;
+```
+
+* Anzeigen der Enterprise Rollen mit EUSM
+
+```bash
+eusm listEnterpriseRoles domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+
+eusm listEnterpriseRoleInfo enterprise_role="HR Management" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+
+eusm listEnterpriseRoleInfo enterprise_role="HR Clerk" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+## Oracle Enterprise User Security Proxy Authentifizierung
+
+Die Entwickler aus der Entwicklungsabteilung sollen das Recht Erhalten sich als Proxy auf das TVD_HR Schema anzumelden.
+
+* Erstellen der Proxy Berechtigung in der Datenbank-
+
+```sql
+CONNECT / AS SYSDBA
+ALTER USER tvd_hr GRANT CONNECT THROUGH ENTERPRISE USERS;
+```
+
+* Erstellen des Enterprise Proxy Recht
+
+```bash
+eusm createProxyPerm proxy_permission="TVD HR Devel" \
+    domain_name="OracleDefaultDomain" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+* Weisen Sie das Proxy Recht der AD Gruppe *Trivadis LAB Developers* zu.
+  
+```bash
+eusm grantProxyPerm proxy_permission="TVD HR Devel" \
+    domain_name="OracleDefaultDomain" \
+    group_dn="CN=Trivadis LAB Developers,OU=Groups,DC=trivadislabs,DC=com" \
+    realm_dn="dc=trivadislabs,dc=com" \
+    ldap_host="oud.trivadislabs.com" ldap_port=1389 \
+    ldap_user_dn="cn=Directory Manager" \
+    ldap_user_password="LAB01schulung"
+```
+
+* Prüfen Sie die Verbindung normal und als proxy mit einem Mitarbeiter aus dem Development Team. *Douglas Adams, Ernst Blofeld, Henry Ford, James Scott, Paul Smith.*
+
+```sql
+CONNECT ford/LAB01schulung@TDB122A
+show user
+@sousrinf
+SELECT * FROM session_roles;
+
+CONNECT blofeld[tvd_hr]/LAB01schulung@TDB122A
+show user
+@sousrinf
+SELECT * FROM session_roles;
+```
+
+## Zusatzaufgaben: Oracle Enterprise User Security
+
+* Erstellen Sie eine Enterprise Rolle für Administratoren
+* Weisen Sie eine Entprechende Gruppe dieser Enterprise Rolle zu
+* Prüfen Sie den Inhalt vom LDAP EUS Context
