@@ -181,7 +181,7 @@ Der Active Directory Server basiert auf einer Windows Server 2012 R2 Umgebung (W
 
 Damit eine mehr oder weniger praxis nahe Anbindung an das Active Directory möglich ist, wurde für die fiktive Firma *Trivadis LAB* eine einfache AD Struktur aufgebaut. Die folgende Abbildung zeigt das Organigram inklusive Abteilungen und Mitarbeiter für *Trivadis LAB*. Sämtlich aufgeführte Benutzer können als Testbenutzer verwendet werden. Wobei der Loginname jeweils dem klein geschriebenen Nachname entspricht. Passwort ist für alle Benutzer *LAB01schulung*.
 
-!["Trivadis LAB Company"](images/Trivadis_Labs_Company.png)
+!["Trivadis LAB Company"](images/Trivadislabs_Company.png)
 *Abb. 3: Organigram Trivadis LAB Company*
 
 Das fiktive Unternehmen hat folgende Abteilungen:
