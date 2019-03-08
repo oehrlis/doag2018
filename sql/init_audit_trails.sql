@@ -114,8 +114,22 @@ END;
 /
 
 BEGIN
+  DBMS_SCHEDULER.CREATE_JOB (
+    job_name   => 'DAILY_AUDIT_TIMESTAMP_UNIFIED',
+    job_type   => 'PLSQL_BLOCK',
+    job_action => 'BEGIN DBMS_AUDIT_MGMT.SET_LAST_ARCHIVE_TIMESTAMP(AUDIT_TRAIL_TYPE => 
+                   DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,LAST_ARCHIVE_TIME => sysdate-7); END;',
+    start_date => sysdate,
+    repeat_interval => 'FREQ=HOURLY;INTERVAL=24',
+    enabled    =>  TRUE,
+    comments   => 'Create an archive timestamp for unified audit'
+  );
+END;
+/
+
+BEGIN
   DBMS_AUDIT_MGMT.CREATE_PURGE_JOB(
-    AUDIT_TRAIL_TYPE           => DBMS_AUDIT_MGMT.AUDIT_TRAIL_ALL,
+    AUDIT_TRAIL_TYPE           => DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
     AUDIT_TRAIL_PURGE_INTERVAL => 24 /* hours */,
     AUDIT_TRAIL_PURGE_NAME     => 'Daily_Audit_Purge_Job',
     USE_LAST_ARCH_TIMESTAMP    => TRUE
